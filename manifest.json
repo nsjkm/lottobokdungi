@@ -1,0 +1,22 @@
+{
+  "name": "로또복덩이",
+  "short_name": "로또복덩이",
+  "description": "복덩이가 행운의 번호를 뽑아드려요 🍀",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A1A",
+  "theme_color": "#FFD700",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

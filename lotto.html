@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍀 로또복덩이 - 행운의 번호를 찾아서</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #FFD700;
+    --gold-light: #FFF0A0;
+    --deep: #0A0A1A;
+    --navy: #0D1B3E;
+    --accent: #FF6B35;
+    --green: #00E676;
+    --text: #E8E8F0;
+    --muted: #8888AA;
+    --card-bg: rgba(255,255,255,0.05);
+    --card-border: rgba(255,215,0,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(255,215,0,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,107,53,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(13,27,62,0.9) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 40px 0 30px;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 10vw, 80px);
+    background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B35);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 4px;
+    line-height: 1;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,0.3));
+  }
+
+  .logo-sub {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 6px;
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+
+  /* Jackpot Banner */
+  .jackpot-banner {
+    background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,107,53,0.08));
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .jackpot-label {
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .jackpot-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 6vw, 44px);
+    color: var(--gold);
+    letter-spacing: 2px;
+    filter: drop-shadow(0 0 10px rgba(255,215,0,0.5));
+  }
+
+  .round-info {
+    text-align: right;
+  }
+
+  .round-num {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .round-num span {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .next-draw {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin: 28px 0 20px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 6px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+  }
+
+  .tab:hover:not(.active) {
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+  }
+
+  /* Tab Panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Card */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* Lotto Balls */
+  .balls-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: 70px;
+    align-items: center;
+  }
+
+  .ball {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 900;
+    position: relative;
+    cursor: default;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.3);
+  }
+
+  .ball:hover { transform: scale(1.08); }
+
+  .ball.yellow { background: linear-gradient(145deg, #FFE066, #FFC200); color: #5A3A00; }
+  .ball.blue   { background: linear-gradient(145deg, #5BA3FF, #1565C0); color: #fff; }
+  .ball.red    { background: linear-gradient(145deg, #FF6B6B, #C62828); color: #fff; }
+  .ball.gray   { background: linear-gradient(145deg, #9E9E9E, #424242); color: #fff; }
+  .ball.green  { background: linear-gradient(145deg, #66BB6A, #2E7D32); color: #fff; }
+
+  .ball.bonus {
+    position: relative;
+  }
+  .ball.bonus::after {
+    content: '+';
+    position: absolute;
+    top: -8px;
+    right: -4px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+  }
+
+  .ball.empty {
+    background: rgba(255,255,255,0.06);
+    border: 2px dashed rgba(255,255,255,0.15);
+    box-shadow: none;
+    color: var(--muted);
+    font-size: 24px;
+  }
+
+  .ball-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    border: 2px dashed rgba(255,255,255,0.1);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  @keyframes ballPop {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    70% { transform: scale(1.2) rotate(10deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .ball.animate { animation: ballPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  /* Generate Controls */
+  .gen-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #FFD700, #FF8C00);
+    color: #000;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,215,0,0.5);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 12px;
+    padding: 10px 14px;
+    flex: none;
+  }
+
+  /* Mode Select */
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .mode-btn {
+    padding: 12px 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .mode-btn.active {
+    border-color: var(--gold);
+    background: rgba(255,215,0,0.1);
+    color: var(--gold);
+  }
+
+  .mode-btn .icon { font-size: 18px; display: block; margin-bottom: 4px; }
+
+  /* Saved Numbers */
+  .saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .saved-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    transition: border-color 0.2s;
+  }
+
+  .saved-item:hover { border-color: rgba(255,215,0,0.2); }
+
+  .saved-balls { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .mini-ball {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .saved-meta { font-size: 11px; color: var(--muted); }
+  .saved-meta span { color: var(--text); font-weight: 600; }
+
+  .del-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .del-btn:hover { opacity: 1; color: #FF5252; }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .stat-ball-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat-ball {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    position: relative;
+  }
+
+  .freq-bar-wrap {
+    width: 44px;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .freq-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #FF8C00);
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  .freq-count {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* Hot/Cold badges */
+  .hot-badge { color: #FF6B35; font-size: 10px; }
+  .cold-badge { color: #5BA3FF; font-size: 10px; }
+
+  /* Past results */
+  .past-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .past-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .past-round { font-size: 13px; font-weight: 700; color: var(--gold); }
+  .past-date { font-size: 11px; color: var(--muted); }
+
+  /* Quick pick count */
+  .count-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .count-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+  .count-btns { display: flex; gap: 6px; }
+
+  .count-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .count-btn:hover { background: rgba(255,215,0,0.1); border-color: var(--gold); }
+
+  .count-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--gold);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  /* Multiple picks */
+  .multi-row {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .multi-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+    letter-spacing: 2px;
+    min-width: 28px;
+  }
+
+  .multi-balls { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* Notice */
+  .notice {
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  .notice strong { color: var(--accent); }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 14px; line-height: 1.6; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.2); border-radius: 3px; }
+
+  @media (max-width: 480px) {
+    .ball { width: 48px; height: 48px; font-size: 17px; }
+    .jackpot-banner { flex-direction: column; text-align: center; }
+    .round-info { text-align: center; }
+    .mode-grid { grid-template-columns: repeat(3, 1fr); }
+    .tabs { flex-wrap: wrap; }
+    .tab { font-size: 12px; padding: 8px 6px; }
+  }
+
+  .cert-banner {
+    display: flex; align-items: center; gap: 16px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,53,0.1));
+    border: 1px solid rgba(255,215,0,0.3); border-radius: 16px;
+    padding: 20px 24px; margin-bottom: 16px;
+  }
+  .cert-banner-icon { font-size: 40px; }
+  .cert-banner-title { font-size: 18px; font-weight: 900; color: var(--gold); }
+  .cert-banner-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .cert-rewards { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; margin-bottom: 16px; }
+  .cert-reward-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 8px; text-align: center; }
+  .cert-reward-grade { font-size: 13px; font-weight: 900; margin-bottom: 6px; }
+  .grade-1 { color: #FFD700; } .grade-3 { color: #CD7F32; } .grade-4 { color: #5BA3FF; } .grade-5 { color: var(--muted); }
+  .cert-reward-desc { font-size: 10px; color: var(--muted); line-height: 1.5; }
+  .cert-reward-desc strong { color: var(--text); }
+  .cert-form { display: flex; flex-direction: column; gap: 10px; }
+  .cert-form-row { display: flex; gap: 10px; }
+  .cert-select, .cert-input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; }
+  .cert-select option { background: #1a1a2e; }
+  .cert-select:focus, .cert-input:focus { border-color: var(--gold); }
+  .cert-textarea { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; resize: none; height: 80px; outline: none; width: 100%; }
+  .cert-textarea:focus { border-color: var(--gold); }
+  .cert-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px; margin-bottom: 10px; transition: border-color 0.2s; }
+  .cert-item:hover { border-color: rgba(255,215,0,0.2); }
+  .cert-item.grade-1-item { background: rgba(255,215,0,0.06); border-color: rgba(255,215,0,0.3); }
+  .cert-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cert-item-left { display: flex; align-items: center; gap: 10px; }
+  .cert-grade-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 900; }
+  .badge-1 { background: rgba(255,215,0,0.2); color: #FFD700; border: 1px solid rgba(255,215,0,0.4); }
+  .badge-2 { background: rgba(192,192,192,0.2); color: #C0C0C0; border: 1px solid rgba(192,192,192,0.4); }
+  .badge-3 { background: rgba(205,127,50,0.2); color: #CD7F32; border: 1px solid rgba(205,127,50,0.4); }
+  .badge-4 { background: rgba(91,163,255,0.2); color: #5BA3FF; border: 1px solid rgba(91,163,255,0.4); }
+  .badge-5 { background: rgba(255,255,255,0.08); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); }
+  .cert-nickname { font-size: 14px; font-weight: 700; color: var(--text); }
+  .cert-date { font-size: 11px; color: var(--muted); }
+  .cert-message { font-size: 13px; color: var(--muted); line-height: 1.6; margin-top: 4px; }
+  .hall-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.2); border-radius: 12px; margin-bottom: 8px; }
+  .hall-crown { font-size: 28px; }
+  .hall-name { font-size: 15px; font-weight: 900; color: var(--gold); }
+  .hall-date { font-size: 11px; color: var(--muted); }
+  .hall-msg { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .cert-empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .cert-empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .like-btn { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: var(--muted); font-size: 11px; padding: 4px 10px; cursor: pointer; transition: all 0.2s; }
+  .like-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+
+  /* Footer */
+  .site-footer {
+    margin-top: 40px;
+    padding: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+  }
+  .footer-disclaimer {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+    text-align: left;
+    margin-bottom: 14px;
+  }
+  .footer-disclaimer strong { color: var(--accent); }
+  .footer-bottom {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+  }
+  .footer-bottom span { color: var(--gold); opacity: 0.5; }
+
+
+  .cert-photo-upload {
+    border: 2px dashed rgba(255,215,0,0.3);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255,215,0,0.03);
+    position: relative;
+  }
+  .cert-photo-upload:hover {
+    border-color: var(--gold);
+    background: rgba(255,215,0,0.07);
+  }
+  .cert-photo-upload input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .cert-photo-icon { font-size: 32px; margin-bottom: 6px; }
+  .cert-photo-text { font-size: 12px; color: var(--muted); }
+  .cert-photo-text strong { color: var(--gold); }
+  .cert-photo-preview {
+    width: 100%; max-height: 200px; object-fit: cover;
+    border-radius: 10px; display: none; margin-top: 8px;
+  }
+  .cert-item-photo {
+    width: 100%; max-height: 180px; object-fit: cover;
+    border-radius: 10px; margin-top: 10px;
+    cursor: pointer;
+  }
+  .photo-modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 9999;
+    align-items: center; justify-content: center;
+  }
+  .photo-modal.open { display: flex; }
+  .photo-modal img { max-width: 90vw; max-height: 90vh; border-radius: 12px; }
+  .photo-modal-close {
+    position: absolute; top: 20px; right: 20px;
+    background: none; border: none; color: #fff;
+    font-size: 32px; cursor: pointer;
+  }
+
+
+  .mode-desc {
+    background: rgba(255,215,0,0.06);
+    border: 1px solid rgba(255,215,0,0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    min-height: 48px;
+    transition: all 0.3s;
+  }
+  .mode-desc .desc-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">로또복덩이</div>
+    <div class="logo-sub">🍀 복덩이가 행운을 가져다드려요 🍀</div>
+  </header>
+
+  <!-- Jackpot Banner -->
+  <div class="jackpot-banner">
+    <div>
+      <div class="jackpot-label">이번주 1등 예상 당첨금</div>
+      <div class="jackpot-amount" id="jackpot-amount">₩ 23,450,000,000</div>
+    </div>
+    <div class="round-info">
+      <div class="round-num">제 <span id="current-round">1158</span>회</div>
+      <div class="next-draw">🗓 다음 추첨: 토요일 오후 8:45</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('generate')">🍀 행운 뽑기</button>
+    <button class="tab" onclick="switchTab('multiple')">🎰 자동 뽑기</button>
+    <button class="tab" onclick="switchTab('saved')">💾 행운 저장 번호</button>
+    <button class="tab" onclick="switchTab('stats')">📊 통계</button>
+    <button class="tab" onclick="switchTab('past')">🏆 당첨번호</button>
+    <button class="tab" onclick="switchTab('cert')">🎉 당첨인증</button>
+  </div>
+
+  <!-- Tab: 번호 생성 -->
+  <div id="tab-generate" class="tab-panel active">
+    <div class="card">
+      <div class="card-title">✨ 오늘의 행운 방식 선택</div>
+      <div class="mode-grid">
+        <button class="mode-btn active" onclick="setMode('random', this)">
+          <span class="icon">🎲</span>순수 행운
+        </button>
+        <button class="mode-btn" onclick="setMode('hot', this)">
+          <span class="icon">🔥</span>뜨는 번호
+        </button>
+        <button class="mode-btn" onclick="setMode('cold', this)">
+          <span class="icon">❄️</span>때를 기다린
+        </button>
+        <button class="mode-btn" onclick="setMode('balanced', this)">
+          <span class="icon">⚖️</span>황금 균형
+        </button>
+        <button class="mode-btn" onclick="setMode('oddeven', this)">
+          <span class="icon">🔢</span>황금 비율
+        </button>
+        <button class="mode-btn" onclick="setMode('lucky', this)">
+          <span class="icon">🍀</span>복덩이 추천
+        </button>
+      </div>
+
+      <div class="mode-desc" id="mode-desc">
+        <div class="desc-title">🎲 순수 행운</div>
+        1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요 😊
+      </div>
+
+      <div class="balls-container" id="main-balls">
+        <div class="ball empty">?</div>
+        <div class="ball empty">?</div>
+        <div class="ball empty">?</div>
+        <div class="ball empty">?</div>
+        <div class="ball empty">?</div>
+        <div class="ball empty">?</div>
+      </div>
+
+      <div class="gen-controls">
+        <button class="btn btn-primary" onclick="generateNumbers()">🍀 복덩이야 번호 뽑아줘!</button>
+        <button class="btn btn-secondary" onclick="saveCurrentNumbers()">💾 행운 저장</button>
+        <button class="btn btn-ghost" onclick="clearBalls()">↺</button>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>⚠️ 안내</strong> 복덩이가 열심히 뽑아드린 번호예요 🍀 재미로 즐겨주세요! 이 번호로 반드시 당첨된다는 보장은 없답니다. 로또는 만 19세 이상 구매 가능해요 😊
+    </div>
+  </div>
+
+  <!-- Tab: 자동 5게임 -->
+  <div id="tab-multiple" class="tab-panel">
+    <div class="card">
+      <div class="card-title">🍀 복덩이가 대신 뽑아드려요</div>
+      <div class="count-control">
+        <span class="count-label">게임 수</span>
+        <div class="count-btns">
+          <button class="count-btn" onclick="changeCount(-1)">−</button>
+          <div class="count-display" id="game-count">5</div>
+          <button class="count-btn" onclick="changeCount(1)">+</button>
+        </div>
+      </div>
+      <div id="multi-results"></div>
+      <div class="gen-controls">
+        <button class="btn btn-primary" onclick="generateMultiple()">🍀 복덩이야 다 뽑아줘!</button>
+        <button class="btn btn-secondary" onclick="saveAllMultiple()">💾 전체 행운 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: 저장 번호 -->
+  <div id="tab-saved" class="tab-panel">
+    <div class="card">
+      <div class="card-title">💾 내 행운 번호 모음</div>
+      <div id="saved-list" class="saved-list">
+        <div class="empty-state">
+          <div class="empty-icon">📂</div>
+          <div class="empty-text">저장된 번호가 없어요.<br>번호를 생성하고 저장해보세요!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: 통계 -->
+  <div id="tab-stats" class="tab-panel">
+    <div class="card">
+      <div class="card-title">🔥 뜨는 번호 (많이 나온 번호)</div>
+      <div id="hot-stats" class="stats-grid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">❄️ 때를 기다린 (적게 나온 번호)</div>
+      <div id="cold-stats" class="stats-grid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 전체 번호 빈도</div>
+      <div id="all-stats" class="stats-grid"></div>
+    </div>
+  </div>
+
+  <!-- Tab: 당첨번호 -->
+  <div id="tab-past" class="tab-panel">
+    <div class="card">
+      <div class="card-title">최근 당첨번호</div>
+      <div id="past-results"></div>
+    </div>
+  </div>
+
+
+  <!-- Tab: 당첨 인증 -->
+  <div id="tab-cert" class="tab-panel">
+    <div class="cert-banner">
+      <div class="cert-banner-icon">🎉</div>
+      <div>
+        <div class="cert-banner-title">당첨 인증 게시판</div>
+        <div class="cert-banner-sub">로또복덩이로 당첨되셨나요? 자랑해주세요! 혜택도 드려요 🎁</div>
+      </div>
+    </div>
+    <div class="cert-rewards">
+      <div class="cert-reward-item"><div class="cert-reward-grade grade-5">5등</div><div class="cert-reward-desc">인증 시<br><strong>1주 무료</strong></div></div>
+      <div class="cert-reward-item"><div class="cert-reward-grade grade-4">4등</div><div class="cert-reward-desc">인증 시<br><strong>1개월 무료</strong></div></div>
+      <div class="cert-reward-item"><div class="cert-reward-grade grade-3">3등 🥉</div><div class="cert-reward-desc">인증 시<br><strong>6개월 무료</strong></div></div>
+      <div class="cert-reward-item"><div class="cert-reward-grade grade-4">2등 🥈</div><div class="cert-reward-desc">인증 시<br><strong>1년 무료</strong></div></div>
+      <div class="cert-reward-item"><div class="cert-reward-grade grade-1">1등 👑</div><div class="cert-reward-desc">인증 시<br><strong>영구무료+명예의전당</strong></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">✍️ 당첨 인증하기</div>
+      <div class="cert-form">
+        <div class="cert-form-row">
+          <select class="cert-select" id="cert-grade">
+            <option value="">등수 선택 필수!</option>
+            <option value="1">👑 1등 (약 27억)</option>
+            <option value="2">🥈 2등 (약 6천만원)</option>
+            <option value="3">🥉 3등 (약 150만원)</option>
+            <option value="4">4등 (5만원)</option>
+            <option value="5">5등 (5천원)</option>
+          </select>
+          <input class="cert-input" id="cert-nickname" type="text" placeholder="닉네임 (최대 10자)" maxlength="10">
+        </div>
+        <textarea class="cert-textarea" id="cert-message" placeholder="당첨 소감 한마디! (선택사항)"></textarea>
+        <div class="cert-photo-upload" onclick="document.getElementById('cert-photo').click()">
+          <input type="file" id="cert-photo" accept="image/*" onchange="previewPhoto(this)" onclick="event.stopPropagation()">
+          <div class="cert-photo-icon">📸</div>
+          <div class="cert-photo-text"><strong>당첨 인증샷 올리기</strong> (선택사항)<br>당첨 화면 캡처를 올려주세요!</div>
+          <img id="cert-photo-preview" class="cert-photo-preview" src="" alt="미리보기">
+        </div>
+        <button class="btn btn-primary" onclick="submitCert()" style="width:100%;margin-top:4px;">🎉 인증 등록하기</button>
+      </div>
+    </div>
+    <div class="card" id="hall-of-fame-card" style="display:none">
+      <div class="card-title">👑 명예의 전당</div>
+      <div id="hall-of-fame"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 당첨 인증 목록 <span id="cert-count" style="color:var(--gold);font-size:12px;margin-left:6px;"></span></div>
+      <div id="cert-list"></div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-disclaimer">
+      <strong>⚠️ 면책 공지 (필독)</strong><br>
+      본 사이트(로또복덩이)는 통계 기반 번호 생성 서비스를 제공하며, <strong>당첨을 절대 보장하지 않습니다.</strong>
+      생성된 번호는 참고용이며 당첨 결과에 대한 책임을 지지 않습니다.<br><br>
+      유료 멤버십은 번호 생성 편의 기능에 대한 이용료이며, 당첨 번호 판매가 아닙니다.
+      로또는 <strong>만 19세 이상</strong>만 구매 가능하며 건전하게 즐겨주세요.
+      도박 문제로 어려움을 겪고 계시다면 <strong>한국도박문제예방치유원 1336</strong>으로 연락하세요.
+    </div>
+    <div class="footer-bottom">
+      <span>🍀 로또복덩이</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
+      © 2025 로또복덩이. All Rights Reserved.
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// ===================== DATA =====================
+const pastResults = [
+  { round: 1157, date: '2025.02.15', numbers: [3, 14, 22, 31, 38, 45], bonus: 7 },
+  { round: 1156, date: '2025.02.08', numbers: [1, 8, 17, 29, 33, 42], bonus: 11 },
+  { round: 1155, date: '2025.02.01', numbers: [6, 12, 20, 27, 35, 40], bonus: 3 },
+  { round: 1154, date: '2025.01.25', numbers: [4, 9, 18, 26, 34, 43], bonus: 15 },
+  { round: 1153, date: '2025.01.18', numbers: [2, 11, 19, 28, 36, 41], bonus: 24 },
+  { round: 1152, date: '2025.01.11', numbers: [5, 10, 21, 30, 37, 44], bonus: 16 },
+  { round: 1151, date: '2025.01.04', numbers: [7, 13, 23, 32, 39, 45], bonus: 19 },
+  { round: 1150, date: '2024.12.28', numbers: [1, 16, 24, 31, 38, 42], bonus: 9 },
+  { round: 1149, date: '2024.12.21', numbers: [3, 15, 25, 33, 40, 44], bonus: 12 },
+  { round: 1148, date: '2024.12.14', numbers: [6, 18, 26, 35, 41, 45], bonus: 20 },
+];
+
+// Compute frequency from past results
+const freqMap = {};
+for (let i = 1; i <= 45; i++) freqMap[i] = 0;
+pastResults.forEach(r => {
+  r.numbers.forEach(n => freqMap[n]++);
+  freqMap[r.bonus]++;
+});
+
+const sortedByFreq = Object.entries(freqMap).sort((a,b) => b[1]-a[1]).map(e => parseInt(e[0]));
+const hotNumbers = sortedByFreq.slice(0, 15);
+const coldNumbers = sortedByFreq.slice(-15).reverse();
+
+let currentMode = 'random';
+let gameCount = 5;
+let savedNumbers = JSON.parse(localStorage.getItem('lottoSaved') || '[]');
+let multiNumbers = [];
+
+// ===================== BALL COLOR =====================
+function getBallClass(n) {
+  if (n <= 10) return 'yellow';
+  if (n <= 20) return 'blue';
+  if (n <= 30) return 'red';
+  if (n <= 40) return 'gray';
+  return 'green';
+}
+
+function createBallEl(n, isBonus = false, size = 'normal') {
+  const div = document.createElement('div');
+  div.className = `ball ${getBallClass(n)}${isBonus ? ' bonus' : ''}`;
+  if (size === 'mini') div.className = `mini-ball ${getBallClass(n)}`;
+  if (size === 'stat') div.className = `stat-ball ${getBallClass(n)}`;
+  div.textContent = n;
+  return div;
+}
+
+// ===================== GENERATE =====================
+function pickNumbers(mode) {
+  let pool = Array.from({length: 45}, (_, i) => i + 1);
+  let nums = [];
+
+  if (mode === 'random') {
+    shuffle(pool);
+    nums = pool.slice(0, 6);
+  } else if (mode === 'hot') {
+    let hp = [...hotNumbers];
+    shuffle(hp);
+    nums = hp.slice(0, 6);
+  } else if (mode === 'cold') {
+    let cp = [...coldNumbers];
+    shuffle(cp);
+    nums = cp.slice(0, 6);
+  } else if (mode === 'balanced') {
+    let hot3 = [...hotNumbers]; shuffle(hot3);
+    let cold3 = [...coldNumbers]; shuffle(cold3);
+    nums = [...hot3.slice(0,3), ...cold3.slice(0,3)];
+  } else if (mode === 'oddeven') {
+    let odds = pool.filter(n => n % 2 !== 0);
+    let evens = pool.filter(n => n % 2 === 0);
+    shuffle(odds); shuffle(evens);
+    nums = [...odds.slice(0,3), ...evens.slice(0,3)];
+  } else if (mode === 'lucky') {
+    // Weighted pick
+    const weights = pool.map(n => freqMap[n] + 1);
+    const total = weights.reduce((a,b)=>a+b,0);
+    while (nums.length < 6) {
+      let rand = Math.random() * total;
+      let cum = 0;
+      for (let i = 0; i < pool.length; i++) {
+        cum += weights[i];
+        if (rand <= cum && !nums.includes(pool[i])) {
+          nums.push(pool[i]);
+          break;
+        }
+      }
+    }
+  }
+
+  return nums.sort((a,b)=>a-b);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+let currentNumbers = [];
+
+function generateNumbers() {
+  currentNumbers = pickNumbers(currentMode);
+  renderMainBalls(currentNumbers);
+}
+
+function renderMainBalls(nums) {
+  const container = document.getElementById('main-balls');
+  container.innerHTML = '';
+  nums.forEach((n, i) => {
+    const ball = createBallEl(n);
+    ball.style.opacity = '0';
+    ball.style.animationDelay = `${i * 80}ms`;
+    container.appendChild(ball);
+    setTimeout(() => {
+      ball.classList.add('animate');
+      ball.style.opacity = '1';
+    }, i * 80);
+  });
+}
+
+function clearBalls() {
+  currentNumbers = [];
+  const container = document.getElementById('main-balls');
+  container.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const div = document.createElement('div');
+    div.className = 'ball empty';
+    div.textContent = '?';
+    container.appendChild(div);
+  }
+}
+
+function setMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const descs = {
+    'random': { title: '🎲 순수 행운', desc: '1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요 😊' },
+    'hot': { title: '🔥 뜨는 번호', desc: '최근 당첨에서 자주 나온 번호들 위주로 뽑아요. 요즘 잘 나오는 번호에 올라타는 방식이에요 🔥' },
+    'cold': { title: '❄️ 때를 기다린', desc: '최근에 한 번도 안 나온 번호들을 뽑아요. 오랫동안 기다린 번호가 이번엔 나올 거라는 믿음이에요 ❄️' },
+    'balanced': { title: '⚖️ 황금 균형', desc: '자주 나온 번호 3개 + 안 나온 번호 3개를 균형있게 섞어요. 중간을 노리는 안정적인 방식이에요 ⚖️' },
+    'oddeven': { title: '🔢 황금 비율', desc: '홀수 3개 + 짝수 3개를 정확히 반반씩 뽑아요. 실제 당첨번호에서 홀짝이 골고루 나오는 경우가 많아요 🔢' },
+    'lucky': { title: '🍀 복덩이 추천', desc: '복덩이가 과거 데이터를 보고 나올 것 같은 번호에 살짝 힘을 실어서 뽑아줘요. 복덩이 특제 방식이에요 🍀' }
+  };
+  const d = descs[mode];
+  if (d) {
+    document.getElementById('mode-desc').innerHTML = '<div class="desc-title">'+d.title+'</div>' + d.desc;
+  }
+}
+
+// ===================== SAVE =====================
+function saveCurrentNumbers() {
+  if (currentNumbers.length !== 6) {
+    alert('먼저 번호를 생성해주세요!'); return;
+  }
+  const entry = { nums: currentNumbers, date: new Date().toLocaleDateString('ko-KR'), mode: currentMode };
+  savedNumbers.unshift(entry);
+  if (savedNumbers.length > 20) savedNumbers.pop();
+  localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers));
+  renderSaved();
+  // Flash feedback
+  const btn = event.target;
+  btn.textContent = '✅ 저장됨!';
+  setTimeout(() => btn.textContent = '💾 행운 저장', 1500);
+}
+
+function renderSaved() {
+  const container = document.getElementById('saved-list');
+  if (savedNumbers.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-text">저장된 번호가 없어요.<br>번호를 생성하고 저장해보세요!</div></div>`;
+    return;
+  }
+  container.innerHTML = '';
+  savedNumbers.forEach((entry, idx) => {
+    const item = document.createElement('div');
+    item.className = 'saved-item';
+    const ballsDiv = document.createElement('div');
+    ballsDiv.className = 'saved-balls';
+    entry.nums.forEach(n => ballsDiv.appendChild(createBallEl(n, false, 'mini')));
+    const meta = document.createElement('div');
+    meta.className = 'saved-meta';
+    const modeLabel = { random:'랜덤', hot:'뜨는 번호', cold:'때를 기다린', balanced:'황금 균형', oddeven:'홀짝', lucky:'행운AI' };
+    meta.innerHTML = `<span>${entry.date}</span> · ${modeLabel[entry.mode] || entry.mode}`;
+    const del = document.createElement('button');
+    del.className = 'del-btn';
+    del.textContent = '×';
+    del.onclick = () => { savedNumbers.splice(idx, 1); localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers)); renderSaved(); };
+    item.appendChild(ballsDiv);
+    item.appendChild(meta);
+    item.appendChild(del);
+    container.appendChild(item);
+  });
+}
+
+// ===================== MULTIPLE =====================
+function changeCount(delta) {
+  gameCount = Math.min(10, Math.max(1, gameCount + delta));
+  document.getElementById('game-count').textContent = gameCount;
+}
+
+function generateMultiple() {
+  multiNumbers = [];
+  const container = document.getElementById('multi-results');
+  container.innerHTML = '';
+  for (let g = 0; g < gameCount; g++) {
+    const nums = pickNumbers('random');
+    multiNumbers.push(nums);
+    const row = document.createElement('div');
+    row.className = 'multi-row';
+    const label = document.createElement('div');
+    label.className = 'multi-label';
+    label.textContent = String.fromCharCode(65 + g);
+    const balls = document.createElement('div');
+    balls.className = 'multi-balls';
+    nums.forEach((n, i) => {
+      const ball = createBallEl(n, false, 'mini');
+      ball.style.opacity = '0';
+      balls.appendChild(ball);
+      setTimeout(() => { ball.style.opacity='1'; ball.style.transition='opacity 0.3s'; }, g*100 + i*40);
+    });
+    row.appendChild(label);
+    row.appendChild(balls);
+    container.appendChild(row);
+  }
+}
+
+function saveAllMultiple() {
+  if (multiNumbers.length === 0) { alert('먼저 번호를 생성해주세요!'); return; }
+  multiNumbers.forEach(nums => {
+    savedNumbers.unshift({ nums, date: new Date().toLocaleDateString('ko-KR'), mode: 'random' });
+  });
+  if (savedNumbers.length > 20) savedNumbers = savedNumbers.slice(0, 20);
+  localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers));
+  renderSaved();
+  const btn = event.target;
+  btn.textContent = '✅ 저장됨!';
+  setTimeout(() => btn.textContent = '💾 전체 행운 저장', 1500);
+}
+
+// ===================== STATS =====================
+function renderStats() {
+  const maxFreq = Math.max(...Object.values(freqMap));
+
+  function renderStatGroup(containerId, numbers) {
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    numbers.forEach(n => {
+      const wrap = document.createElement('div');
+      wrap.className = 'stat-ball-wrap';
+      const ball = document.createElement('div');
+      ball.className = `stat-ball ${getBallClass(n)}`;
+      ball.textContent = n;
+      const barWrap = document.createElement('div');
+      barWrap.className = 'freq-bar-wrap';
+      const bar = document.createElement('div');
+      bar.className = 'freq-bar';
+      bar.style.width = '0%';
+      setTimeout(() => bar.style.width = `${(freqMap[n]/maxFreq)*100}%`, 300);
+      barWrap.appendChild(bar);
+      const count = document.createElement('div');
+      count.className = 'freq-count';
+      count.textContent = freqMap[n] + '회';
+      wrap.appendChild(ball);
+      wrap.appendChild(barWrap);
+      wrap.appendChild(count);
+      c.appendChild(wrap);
+    });
+  }
+
+  renderStatGroup('hot-stats', hotNumbers.slice(0,10));
+  renderStatGroup('cold-stats', coldNumbers.slice(0,10));
+  renderStatGroup('all-stats', Array.from({length:45},(_,i)=>i+1));
+}
+
+// ===================== PAST RESULTS =====================
+function renderPast() {
+  const c = document.getElementById('past-results');
+  c.innerHTML = '';
+  pastResults.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'past-item';
+    const header = document.createElement('div');
+    header.className = 'past-header';
+    header.innerHTML = `<span class="past-round">제 ${r.round}회</span><span class="past-date">${r.date} 추첨</span>`;
+    const balls = document.createElement('div');
+    balls.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;align-items:center;';
+    r.numbers.forEach(n => balls.appendChild(createBallEl(n, false, 'mini')));
+    const plus = document.createElement('span');
+    plus.style.cssText = 'color:var(--muted);font-size:12px;margin:0 2px;';
+    plus.textContent = '+';
+    balls.appendChild(plus);
+    balls.appendChild(createBallEl(r.bonus, true, 'mini'));
+    item.appendChild(header);
+    item.appendChild(balls);
+    c.appendChild(item);
+  });
+}
+
+// ===================== TABS =====================
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===================== INIT =====================
+renderSaved();
+renderStats();
+renderPast();
+generateMultiple();
+
+// Animate jackpot amount
+const amounts = ['₩ 23,450,000,000', '₩ 23,450,000,001', '₩ 23,450,000,000'];
+
+// ===================== CERT =====================
+let certList = JSON.parse(localStorage.getItem('lottoCert') || 'null');
+if (!certList) {
+  certList = [
+    { grade: '3', nickname: '대구복권왕', message: '3등 당첨!! 150만원 ㄷㄷ 로또복덩이 최고!!', date: '2025.02.10', likes: 47 },
+    { grade: '4', nickname: '인천행운아', message: '4등 5만원!! 치킨 사먹겠습니다 ㅋㅋ', date: '2025.02.18', likes: 8 },
+    { grade: '5', nickname: '강남럭키', message: '로또복덩이 번호 믿고 샀더니 5등 됐어요!', date: '2025.02.15', likes: 15 },
+    { grade: '5', nickname: '부산복덩이', message: '5등이지만 너무 기뻐요!! 처음 당첨됐어요', date: '2025.02.20', likes: 12 },
+    { grade: '5', nickname: '제주도민', message: '5천원이지만 기분은 27억 ㅋㅋㅋ 복덩이 화이팅!', date: '2025.02.08', likes: 6 },
+  ];
+  localStorage.setItem('lottoCert', JSON.stringify(certList));
+}
+
+function submitCert() {
+  const grade = document.getElementById('cert-grade').value;
+  const nickname = document.getElementById('cert-nickname').value.trim();
+  const message = document.getElementById('cert-message').value.trim();
+  const photoInput = document.getElementById('cert-photo');
+  if (!grade) { alert('등수를 선택해주세요!'); return; }
+  if (!nickname) { alert('닉네임을 입력해주세요!'); return; }
+
+  function saveEntry(photoData) {
+    certList.unshift({ grade, nickname, message, date: new Date().toLocaleDateString('ko-KR'), likes: 0, photo: photoData || null });
+    localStorage.setItem('lottoCert', JSON.stringify(certList));
+    document.getElementById('cert-grade').value = '';
+    document.getElementById('cert-nickname').value = '';
+    document.getElementById('cert-message').value = '';
+    document.getElementById('cert-photo').value = '';
+    document.getElementById('cert-photo-preview').style.display = 'none';
+    document.querySelector('.cert-photo-text').innerHTML = '<strong>당첨 인증샷 올리기</strong> (선택사항)<br>당첨 화면 캡처를 올려주세요!';
+    renderCert();
+    if (grade === '1') alert('🎊 축하합니다!! 1등!! 관리자에게 인증샷을 보내주시면 영구 무료 혜택을 드려요!');
+    else alert('✅ 인증이 등록됐어요! 감사합니다 🍀');
+  }
+
+  if (photoInput.files && photoInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => saveEntry(e.target.result);
+    reader.readAsDataURL(photoInput.files[0]);
+  } else {
+    saveEntry(null);
+  }
+}
+
+function toggleLike(idx) {
+  certList[idx].likes = (certList[idx].likes || 0) + 1;
+  localStorage.setItem('lottoCert', JSON.stringify(certList));
+  renderCert();
+}
+
+function gradeLabel(g) {
+  return { '1':'👑 1등', '2':'🥈 2등', '3':'🥉 3등', '4':'4등', '5':'5등' }[g] || g+'등';
+}
+
+function renderCert() {
+  const list = document.getElementById('cert-list');
+  const countEl = document.getElementById('cert-count');
+  const hallCard = document.getElementById('hall-of-fame-card');
+  const hall = document.getElementById('hall-of-fame');
+  countEl.textContent = '총 ' + certList.length + '건';
+  const firstPrize = certList.filter(c => c.grade === '1');
+  if (firstPrize.length > 0) {
+    hallCard.style.display = 'block';
+    hall.innerHTML = firstPrize.map(c => '<div class="hall-item"><div class="hall-crown">👑</div><div><div class="hall-name">'+c.nickname+'</div><div class="hall-date">'+c.date+'</div>'+(c.message?'<div class="hall-msg">"'+c.message+'"</div>':'')+'</div></div>').join('');
+  }
+  if (certList.length === 0) {
+    list.innerHTML = '<div class="cert-empty"><div class="cert-empty-icon">🍀</div><div>아직 인증이 없어요!<br>첫 번째 당첨자가 되어보세요!</div></div>';
+    return;
+  }
+  list.innerHTML = certList.map((c, idx) =>
+    '<div class="cert-item '+(c.grade==='1'?'grade-1-item':'')+'">' +
+    '<div class="cert-item-header"><div class="cert-item-left"><span class="cert-grade-badge badge-'+c.grade+'">'+gradeLabel(c.grade)+'</span><span class="cert-nickname">'+c.nickname+'</span></div><span class="cert-date">'+c.date+'</span></div>' +
+    (c.message ? '<div class="cert-message">"'+c.message+'"</div>' : '') +
+    '<div style="margin-top:10px;"><button class="like-btn" onclick="toggleLike('+idx+')">👍 '+( c.likes||0)+'</button></div></div>'
+  ).join('');
+}
+renderCert();
+
+
+// ===================== PHOTO =====================
+function previewPhoto(input) {
+  const preview = document.getElementById('cert-photo-preview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      // Change upload area text
+      document.querySelector('.cert-photo-text').innerHTML = '<strong style="color:var(--green)">✅ 사진이 선택됐어요!</strong><br>다른 사진으로 바꾸려면 클릭하세요';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function openPhotoModal(src) {
+  document.getElementById('photo-modal-img').src = src;
+  document.getElementById('photo-modal').classList.add('open');
+}
+
+function closePhotoModal() {
+  document.getElementById('photo-modal').classList.remove('open');
+}
+
+// Close modal on background click
+document.addEventListener('click', e => {
+  if (e.target.id === 'photo-modal') closePhotoModal();
+});
+
+</script>
+
+<div class="photo-modal" id="photo-modal">
+  <button class="photo-modal-close" onclick="closePhotoModal()">×</button>
+  <img id="photo-modal-img" src="" alt="인증사진">
+</div>
+</body>
+</html>

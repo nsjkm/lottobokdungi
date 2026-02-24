@@ -730,8 +730,8 @@
   <!-- Jackpot Banner -->
   <div class="jackpot-banner">
     <div>
-      <div class="jackpot-label">이번주 1등 예상 당첨금</div>
-      <div class="jackpot-amount" id="jackpot-amount">로딩 중...</div>
+      <div class="jackpot-label">저번주 1등 당첨금 (1212회)</div>
+      <div class="jackpot-amount" id="jackpot-amount">₩ 2,654,089,032</div>
     </div>
     <div class="round-info">
       <div class="round-num">제 <span id="current-round">...</span>회</div>
@@ -930,16 +930,16 @@
 <script>
 // ===================== DATA =====================
 const pastResults = [
-  { round: 1157, date: '2025.02.15', numbers: [3, 14, 22, 31, 38, 45], bonus: 7 },
-  { round: 1156, date: '2025.02.08', numbers: [1, 8, 17, 29, 33, 42], bonus: 11 },
-  { round: 1155, date: '2025.02.01', numbers: [6, 12, 20, 27, 35, 40], bonus: 3 },
-  { round: 1154, date: '2025.01.25', numbers: [4, 9, 18, 26, 34, 43], bonus: 15 },
-  { round: 1153, date: '2025.01.18', numbers: [2, 11, 19, 28, 36, 41], bonus: 24 },
-  { round: 1152, date: '2025.01.11', numbers: [5, 10, 21, 30, 37, 44], bonus: 16 },
-  { round: 1151, date: '2025.01.04', numbers: [7, 13, 23, 32, 39, 45], bonus: 19 },
-  { round: 1150, date: '2024.12.28', numbers: [1, 16, 24, 31, 38, 42], bonus: 9 },
-  { round: 1149, date: '2024.12.21', numbers: [3, 15, 25, 33, 40, 44], bonus: 12 },
-  { round: 1148, date: '2024.12.14', numbers: [6, 18, 26, 35, 41, 45], bonus: 20 },
+  { round: 1212, date: '2026.02.21', numbers: [5, 8, 25, 31, 41, 44], bonus: 45 },
+  { round: 1211, date: '2026.02.14', numbers: [23, 26, 27, 35, 38, 40], bonus: 10 },
+  { round: 1210, date: '2026.02.07', numbers: [1, 7, 9, 17, 27, 38], bonus: 31 },
+  { round: 1209, date: '2026.01.31', numbers: [2, 17, 20, 35, 37, 39], bonus: 24 },
+  { round: 1208, date: '2026.01.24', numbers: [6, 27, 30, 36, 38, 42], bonus: 25 },
+  { round: 1207, date: '2026.01.17', numbers: [10, 22, 24, 27, 38, 45], bonus: 11 },
+  { round: 1206, date: '2026.01.10', numbers: [1, 3, 17, 26, 27, 42], bonus: 23 },
+  { round: 1205, date: '2026.01.03', numbers: [1, 4, 16, 23, 31, 41], bonus: 2 },
+  { round: 1204, date: '2025.12.27', numbers: [8, 16, 28, 30, 31, 44], bonus: 27 },
+  { round: 1203, date: '2025.12.20', numbers: [3, 6, 18, 29, 35, 39], bonus: 24 },
 ];
 
 // Compute frequency from past results
@@ -1248,55 +1248,17 @@ generateMultiple();
 
 
 // ===================== JACKPOT =====================
-async function fetchJackpot() {
-  try {
-    // 이번 회차 자동 계산
-    // 1회차 기준일: 2002년 12월 7일 (토요일)
-    const baseDate = new Date('2002-12-07');
-    const now = new Date();
-    const diffDays = Math.floor((now - baseDate) / (1000 * 60 * 60 * 24));
-    const diffWeeks = Math.floor(diffDays / 7);
-    // 토요일 오후 9시 이후면 이번주 회차, 아니면 지난주
-    const dayOfWeek = now.getDay(); // 0=일, 6=토
-    const hour = now.getHours();
-    let currentRound = 1 + diffWeeks;
-    // 토요일 오후 9시 이전이면 아직 추첨 전이므로 -1
-    if (dayOfWeek === 6 && hour < 21) currentRound = currentRound - 1;
-    if (dayOfWeek !== 6) {
-      // 토요일이 아닌 날은 지난 토요일 회차
-      const daysSinceSat = dayOfWeek === 0 ? 1 : dayOfWeek;
-      currentRound = currentRound;
-    }
-
-    document.getElementById('current-round').textContent = currentRound;
-
-    // 당첨금 API 호출
-    const res = await fetch(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${currentRound}`);
-    const data = await res.json();
-    if (data.returnValue === 'success') {
-      const prize = data.firstWinamnt;
-      document.getElementById('jackpot-amount').textContent = '₩ ' + prize.toLocaleString('ko-KR');
-      // 당첨번호도 자동 업데이트
-      updateLatestWinNumbers(data);
-    } else {
-      document.getElementById('jackpot-amount').textContent = '동행복권에서 확인하세요';
-    }
-  } catch(e) {
-    // API 실패시 계산된 회차만 표시
-    document.getElementById('jackpot-amount').textContent = '동행복권에서 확인하세요';
-  }
-}
-
-function updateLatestWinNumbers(data) {
-  try {
-    const nums = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
-    const bonus = data.bnusNo;
-    // past 탭의 최신 회차 업데이트 (있으면)
-    const latestRow = document.querySelector('.past-row:first-child');
-    if (latestRow) {
-      // 이미 있으면 스킵
-    }
-  } catch(e) {}
+function fetchJackpot() {
+  // 이번 회차 자동 계산
+  const baseDate = new Date('2002-12-07');
+  const now = new Date();
+  const diffDays = Math.floor((now - baseDate) / (1000 * 60 * 60 * 24));
+  let currentRound = 1 + Math.floor(diffDays / 7);
+  const dayOfWeek = now.getDay();
+  const hour = now.getHours();
+  if (dayOfWeek === 6 && hour < 21) currentRound -= 1;
+  document.getElementById('current-round').textContent = currentRound;
+  // 당첨금은 정적으로 표시 (매주 업데이트)
 }
 
 // 다음 당첨일 계산
@@ -1322,11 +1284,11 @@ calcNextDraw();
 let certList = JSON.parse(localStorage.getItem('lottoCert') || 'null');
 if (!certList) {
   certList = [
-    { grade: '3', nickname: '대구복권왕', message: '3등 당첨!! 150만원 ㄷㄷ 로또복덩이 최고!!', date: '2025.02.10', likes: 47 },
-    { grade: '4', nickname: '인천행운아', message: '4등 5만원!! 치킨 사먹겠습니다 ㅋㅋ', date: '2025.02.18', likes: 8 },
-    { grade: '5', nickname: '강남럭키', message: '로또복덩이 번호 믿고 샀더니 5등 됐어요!', date: '2025.02.15', likes: 15 },
-    { grade: '5', nickname: '부산복덩이', message: '5등이지만 너무 기뻐요!! 처음 당첨됐어요', date: '2025.02.20', likes: 12 },
-    { grade: '5', nickname: '제주도민', message: '5천원이지만 기분은 27억 ㅋㅋㅋ 복덩이 화이팅!', date: '2025.02.08', likes: 6 },
+    { grade: '3', nickname: '대구복권왕', message: '3등 당첨!! 150만원 ㄷㄷ 로또복덩이 최고!!', date: '2026.02.14', likes: 47 },
+    { grade: '4', nickname: '인천행운아', message: '4등 5만원!! 치킨 사먹겠습니다 ㅋㅋ', date: '2026.02.14', likes: 8 },
+    { grade: '5', nickname: '강남럭키', message: '로또복덩이 번호 믿고 샀더니 5등 됐어요!', date: '2026.02.14', likes: 15 },
+    { grade: '5', nickname: '부산복덩이', message: '5등이지만 너무 기뻐요!! 처음 당첨됐어요', date: '2026.02.21', likes: 12 },
+    { grade: '5', nickname: '제주도민', message: '5천원이지만 기분은 27억 ㅋㅋㅋ 복덩이 화이팅!', date: '2026.02.07', likes: 6 },
   ];
   localStorage.setItem('lottoCert', JSON.stringify(certList));
 }

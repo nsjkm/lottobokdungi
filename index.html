@@ -1281,13 +1281,14 @@ fetchJackpot();
 calcNextDraw();
 
 // ===================== CERT =====================
+localStorage.removeItem('lottoCert');
 let certList = JSON.parse(localStorage.getItem('lottoCert') || 'null');
 if (!certList) {
   certList = [
+    { grade: '5', nickname: '부산복덩이', message: '5등이지만 너무 기뻐요!! 처음 당첨됐어요', date: '2026.02.21', likes: 12 },
     { grade: '3', nickname: '대구복권왕', message: '3등 당첨!! 150만원 ㄷㄷ 로또복덩이 최고!!', date: '2026.02.14', likes: 47 },
     { grade: '4', nickname: '인천행운아', message: '4등 5만원!! 치킨 사먹겠습니다 ㅋㅋ', date: '2026.02.14', likes: 8 },
     { grade: '5', nickname: '강남럭키', message: '로또복덩이 번호 믿고 샀더니 5등 됐어요!', date: '2026.02.14', likes: 15 },
-    { grade: '5', nickname: '부산복덩이', message: '5등이지만 너무 기뻐요!! 처음 당첨됐어요', date: '2026.02.21', likes: 12 },
     { grade: '5', nickname: '제주도민', message: '5천원이지만 기분은 27억 ㅋㅋㅋ 복덩이 화이팅!', date: '2026.02.07', likes: 6 },
   ];
   localStorage.setItem('lottoCert', JSON.stringify(certList));

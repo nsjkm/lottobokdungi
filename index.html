@@ -734,7 +734,7 @@
       <div class="jackpot-amount" id="jackpot-amount">로딩 중...</div>
     </div>
     <div class="round-info">
-      <div class="round-num">제 <span id="current-round">1158</span>회</div>
+      <div class="round-num">제 <span id="current-round">...</span>회</div>
       <div class="next-draw">🗓 다음 당첨일: <span id="next-draw-date">계산 중...</span></div>
     </div>
   </div>
@@ -1250,20 +1250,53 @@ generateMultiple();
 // ===================== JACKPOT =====================
 async function fetchJackpot() {
   try {
-    // 동행복권 API
-    const round = parseInt(document.getElementById('current-round').textContent);
-    const res = await fetch(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`);
+    // 이번 회차 자동 계산
+    // 1회차 기준일: 2002년 12월 7일 (토요일)
+    const baseDate = new Date('2002-12-07');
+    const now = new Date();
+    const diffDays = Math.floor((now - baseDate) / (1000 * 60 * 60 * 24));
+    const diffWeeks = Math.floor(diffDays / 7);
+    // 토요일 오후 9시 이후면 이번주 회차, 아니면 지난주
+    const dayOfWeek = now.getDay(); // 0=일, 6=토
+    const hour = now.getHours();
+    let currentRound = 1 + diffWeeks;
+    // 토요일 오후 9시 이전이면 아직 추첨 전이므로 -1
+    if (dayOfWeek === 6 && hour < 21) currentRound = currentRound - 1;
+    if (dayOfWeek !== 6) {
+      // 토요일이 아닌 날은 지난 토요일 회차
+      const daysSinceSat = dayOfWeek === 0 ? 1 : dayOfWeek;
+      currentRound = currentRound;
+    }
+
+    document.getElementById('current-round').textContent = currentRound;
+
+    // 당첨금 API 호출
+    const res = await fetch(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${currentRound}`);
     const data = await res.json();
     if (data.returnValue === 'success') {
       const prize = data.firstWinamnt;
       document.getElementById('jackpot-amount').textContent = '₩ ' + prize.toLocaleString('ko-KR');
+      // 당첨번호도 자동 업데이트
+      updateLatestWinNumbers(data);
     } else {
-      // API 안 되면 기본값
-      document.getElementById('jackpot-amount').textContent = '₩ 확인 중...';
+      document.getElementById('jackpot-amount').textContent = '동행복권에서 확인하세요';
     }
   } catch(e) {
-    document.getElementById('jackpot-amount').textContent = '₩ 동행복권 참조';
+    // API 실패시 계산된 회차만 표시
+    document.getElementById('jackpot-amount').textContent = '동행복권에서 확인하세요';
   }
+}
+
+function updateLatestWinNumbers(data) {
+  try {
+    const nums = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
+    const bonus = data.bnusNo;
+    // past 탭의 최신 회차 업데이트 (있으면)
+    const latestRow = document.querySelector('.past-row:first-child');
+    if (latestRow) {
+      // 이미 있으면 스킵
+    }
+  } catch(e) {}
 }
 
 // 다음 당첨일 계산

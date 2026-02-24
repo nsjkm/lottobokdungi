@@ -1449,7 +1449,10 @@ function closePWA() {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  // 기존 서비스워커 전부 제거 (캐시 문제 해결)
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister());
+  });
 }
 </script>
 </body>

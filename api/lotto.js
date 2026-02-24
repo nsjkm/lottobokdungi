@@ -12,31 +12,30 @@ export default async function handler(req, res) {
     const hour = now.getHours();
     if (day === 6 && hour < 21) round -= 1;
 
-    // User-Agent 헤더 추가해서 동행복권 우회
+    // 동행복권 HTML 페이지에서 당첨번호 스크래핑
     const response = await fetch(
-      `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`,
+      `https://www.dhlottery.co.kr/gameResult.do?method=byWin&drwNo=${round}`,
       {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
           'Referer': 'https://www.dhlottery.co.kr/',
-          'Accept': 'application/json'
         }
       }
     );
-    const data = await response.json();
+    const html = await response.text();
 
-    if (data.returnValue === 'success') {
-      res.status(200).json({
-        round: round,
-        prize: data.firstWinamnt,
-        numbers: [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6],
-        bonus: data.bnusNo,
-        date: data.drwNoDate
-      });
-    } else {
-      throw new Error('no data');
-    }
+    // 당첨번호 파싱
+    const numMatches = html.match(/class="ball_645[^"]*">(\d+)<\/span>/g);
+    const numbers = numMatches ? numMatches.slice(0,6).map(m => parseInt(m.match(/(\d+)<\/span>/)[1])) : [];
+    const bonus = numMatches ? parseInt(numMatches[6]?.match(/(\d+)<\/span>/)?.[1] || 0) : 0;
+
+    // 당첨금 파싱
+    const prizeMatch = html.match(/1등[^<]*<[^>]*>([0-9,]+)원/);
+    const prize = prizeMatch ? parseInt(prizeMatch[1].replace(/,/g, '')) : 0;
+
+    res.status(200).json({ round, numbers, bonus, prize });
+
   } catch (e) {
-    res.status(500).json({ error: '데이터 불러오기 실패', message: e.message });
+    res.status(500).json({ error: '실패', message: e.message });
   }
 }

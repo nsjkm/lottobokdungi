@@ -1251,8 +1251,8 @@ generateMultiple();
 
 
 // ===================== JACKPOT =====================
-function fetchJackpot() {
-  // 이번 회차 자동 계산
+async function fetchJackpot() {
+  // 회차 자동 계산
   const baseDate = new Date('2002-12-07');
   const now = new Date();
   const diffDays = Math.floor((now - baseDate) / (1000 * 60 * 60 * 24));
@@ -1261,7 +1261,19 @@ function fetchJackpot() {
   const hour = now.getHours();
   if (dayOfWeek === 6 && hour < 21) currentRound -= 1;
   document.getElementById('current-round').textContent = currentRound;
-  // 당첨금은 정적으로 표시 (매주 업데이트)
+
+  try {
+    // Vercel API 호출 (서버에서 동행복권 데이터 가져옴)
+    const res = await fetch('/api/lotto');
+    const data = await res.json();
+    if (data.prize) {
+      document.getElementById('jackpot-amount').textContent = '₩ ' + data.prize.toLocaleString('ko-KR');
+      document.querySelector('.jackpot-label').textContent = `저번주 1등 당첨금 (${data.round}회)`;
+      document.getElementById('current-round').textContent = data.round + 1;
+    }
+  } catch(e) {
+    // API 실패시 고정값 유지
+  }
 }
 
 // 다음 당첨일 계산

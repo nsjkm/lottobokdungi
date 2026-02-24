@@ -731,22 +731,22 @@
   <div class="jackpot-banner">
     <div>
       <div class="jackpot-label">이번주 1등 예상 당첨금</div>
-      <div class="jackpot-amount" id="jackpot-amount">₩ 23,450,000,000</div>
+      <div class="jackpot-amount" id="jackpot-amount">로딩 중...</div>
     </div>
     <div class="round-info">
       <div class="round-num">제 <span id="current-round">1158</span>회</div>
-      <div class="next-draw">🗓 다음 추첨: 토요일 오후 8:45</div>
+      <div class="next-draw">🗓 다음 당첨일: <span id="next-draw-date">계산 중...</span></div>
     </div>
   </div>
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('generate')">🍀 행운 뽑기</button>
-    <button class="tab" onclick="switchTab('multiple')">🎰 자동 뽑기</button>
-    <button class="tab" onclick="switchTab('saved')">💾 행운 저장 번호</button>
-    <button class="tab" onclick="switchTab('stats')">📊 통계</button>
-    <button class="tab" onclick="switchTab('past')">🏆 당첨번호</button>
-    <button class="tab" onclick="switchTab('cert')">🎉 당첨인증</button>
+    <button class="tab active" onclick="switchTab('generate')">행운 뽑기</button>
+    <button class="tab" onclick="switchTab('multiple')">자동 뽑기</button>
+    <button class="tab" onclick="switchTab('saved')">저장 번호</button>
+    <button class="tab" onclick="switchTab('stats')">통계</button>
+    <button class="tab" onclick="switchTab('past')">당첨번호</button>
+    <button class="tab" onclick="switchTab('cert')">당첨인증</button>
   </div>
 
   <!-- Tab: 번호 생성 -->
@@ -775,7 +775,7 @@
       </div>
 
       <div class="mode-desc" id="mode-desc">
-        <div class="desc-title">🎲 순수 행운</div>
+        <div class="desc-title">순수 행운</div>
         1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요 😊
       </div>
 
@@ -789,7 +789,7 @@
       </div>
 
       <div class="gen-controls">
-        <button class="btn btn-primary" onclick="generateNumbers()">🍀 복덩이야 번호 뽑아줘!</button>
+        <button class="btn btn-primary" onclick="generateNumbers()">복덩이야 번호 뽑아줘!</button>
         <button class="btn btn-secondary" onclick="saveCurrentNumbers()">💾 행운 저장</button>
         <button class="btn btn-ghost" onclick="clearBalls()">↺</button>
       </div>
@@ -814,7 +814,7 @@
       </div>
       <div id="multi-results"></div>
       <div class="gen-controls">
-        <button class="btn btn-primary" onclick="generateMultiple()">🍀 복덩이야 다 뽑아줘!</button>
+        <button class="btn btn-primary" onclick="generateMultiple()">복덩이야 다 뽑아줘!</button>
         <button class="btn btn-secondary" onclick="saveAllMultiple()">💾 전체 행운 저장</button>
       </div>
     </div>
@@ -836,11 +836,11 @@
   <!-- Tab: 통계 -->
   <div id="tab-stats" class="tab-panel">
     <div class="card">
-      <div class="card-title">🔥 뜨는 번호 (많이 나온 번호)</div>
+      <div class="card-title">뜨는 번호 (많이 나온 번호)</div>
       <div id="hot-stats" class="stats-grid"></div>
     </div>
     <div class="card">
-      <div class="card-title">❄️ 때를 기다린 (적게 나온 번호)</div>
+      <div class="card-title">때를 기다린 (적게 나온 번호)</div>
       <div id="cold-stats" class="stats-grid"></div>
     </div>
     <div class="card">
@@ -1069,12 +1069,12 @@ function setMode(mode, btn) {
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const descs = {
-    'random': { title: '🎲 순수 행운', desc: '1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요 😊' },
-    'hot': { title: '🔥 뜨는 번호', desc: '최근 당첨에서 자주 나온 번호들 위주로 뽑아요. 요즘 잘 나오는 번호에 올라타는 방식이에요 🔥' },
-    'cold': { title: '❄️ 때를 기다린', desc: '최근에 한 번도 안 나온 번호들을 뽑아요. 오랫동안 기다린 번호가 이번엔 나올 거라는 믿음이에요 ❄️' },
-    'balanced': { title: '⚖️ 황금 균형', desc: '자주 나온 번호 3개 + 안 나온 번호 3개를 균형있게 섞어요. 중간을 노리는 안정적인 방식이에요 ⚖️' },
-    'oddeven': { title: '🔢 황금 비율', desc: '홀수 3개 + 짝수 3개를 정확히 반반씩 뽑아요. 실제 당첨번호에서 홀짝이 골고루 나오는 경우가 많아요 🔢' },
-    'lucky': { title: '🍀 복덩이 추천', desc: '복덩이가 과거 데이터를 보고 나올 것 같은 번호에 살짝 힘을 실어서 뽑아줘요. 복덩이 특제 방식이에요 🍀' }
+    'random': { title: '순수 행운', desc: '1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요 😊' },
+    'hot': { title: '뜨는 번호', desc: '최근 당첨에서 자주 나온 번호들 위주로 뽑아요. 요즘 잘 나오는 번호에 올라타는 방식이에요 🔥' },
+    'cold': { title: '때를 기다린', desc: '최근에 한 번도 안 나온 번호들을 뽑아요. 오랫동안 기다린 번호가 이번엔 나올 거라는 믿음이에요 ❄️' },
+    'balanced': { title: '황금 균형', desc: '자주 나온 번호 3개 + 안 나온 번호 3개를 균형있게 섞어요. 중간을 노리는 안정적인 방식이에요 ⚖️' },
+    'oddeven': { title: '황금 비율', desc: '홀수 3개 + 짝수 3개를 정확히 반반씩 뽑아요. 실제 당첨번호에서 홀짝이 골고루 나오는 경우가 많아요 🔢' },
+    'lucky': { title: '복덩이 추천', desc: '복덩이가 과거 데이터를 보고 나올 것 같은 번호에 살짝 힘을 실어서 뽑아줘요. 복덩이 특제 방식이에요 🍀' }
   };
   const d = descs[mode];
   if (d) {
@@ -1245,7 +1245,45 @@ renderPast();
 generateMultiple();
 
 // Animate jackpot amount
-const amounts = ['₩ 23,450,000,000', '₩ 23,450,000,001', '₩ 23,450,000,000'];
+
+
+// ===================== JACKPOT =====================
+async function fetchJackpot() {
+  try {
+    // 동행복권 API
+    const round = parseInt(document.getElementById('current-round').textContent);
+    const res = await fetch(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`);
+    const data = await res.json();
+    if (data.returnValue === 'success') {
+      const prize = data.firstWinamnt;
+      document.getElementById('jackpot-amount').textContent = '₩ ' + prize.toLocaleString('ko-KR');
+    } else {
+      // API 안 되면 기본값
+      document.getElementById('jackpot-amount').textContent = '₩ 확인 중...';
+    }
+  } catch(e) {
+    document.getElementById('jackpot-amount').textContent = '₩ 동행복권 참조';
+  }
+}
+
+// 다음 당첨일 계산
+function calcNextDraw() {
+  const now = new Date();
+  const day = now.getDay(); // 0=일, 6=토
+  let daysUntilSat = (6 - day + 7) % 7;
+  if (daysUntilSat === 0) {
+    const hours = now.getHours();
+    if (hours >= 21) daysUntilSat = 7; // 토요일 9시 이후면 다음주
+  }
+  const next = new Date(now);
+  next.setDate(now.getDate() + daysUntilSat);
+  const month = next.getMonth() + 1;
+  const date = next.getDate();
+  document.getElementById('next-draw-date').textContent = `${month}월 ${date}일 (토) 오후 8:45`;
+}
+
+fetchJackpot();
+calcNextDraw();
 
 // ===================== CERT =====================
 let certList = JSON.parse(localStorage.getItem('lottoCert') || 'null');

@@ -1546,17 +1546,32 @@ async function submitCert() {
     // Cloudinary 업로드
     if (photoData) {
       try {
+        // base64에서 blob으로 변환
+        const base64Data = photoData.split(',')[1];
+        const byteChars = atob(base64Data);
+        const byteArr = new Uint8Array(byteChars.length);
+        for(let i=0; i<byteChars.length; i++) byteArr[i] = byteChars.charCodeAt(i);
+        const blob = new Blob([byteArr], {type: 'image/jpeg'});
+        
         const formData = new FormData();
-        formData.append('file', photoData);
+        formData.append('file', blob, 'cert.jpg');
         formData.append('upload_preset', 'lottobokdungi');
-        formData.append('cloud_name', 'dzeha38w0');
+        
         const res = await fetch('https://api.cloudinary.com/v1_1/dzeha38w0/image/upload', {
           method: 'POST',
           body: formData
         });
         const data = await res.json();
-        photoUrl = data.secure_url || null;
-      } catch(e) { photoUrl = photoData; } // 실패시 base64 그대로
+        if (data.secure_url) {
+          photoUrl = data.secure_url;
+        } else {
+          console.log('Cloudinary 오류:', data);
+          photoUrl = photoData; // 실패시 base64
+        }
+      } catch(e) { 
+        console.log('업로드 오류:', e);
+        photoUrl = photoData; 
+      }
     }
     const certData = {
       grade, nickname, message,

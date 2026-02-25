@@ -1055,13 +1055,7 @@
         <div class="cert-banner-sub">로또복덩이로 당첨되셨나요? 자랑해주세요! 혜택도 드려요 🎁</div>
       </div>
     </div>
-    <div class="cert-rewards">
-      <div class="cert-reward-item"><div class="cert-reward-grade grade-5">5등</div><div class="cert-reward-desc">인증 시<br><strong>1주 무료</strong></div></div>
-      <div class="cert-reward-item"><div class="cert-reward-grade grade-4">4등</div><div class="cert-reward-desc">인증 시<br><strong>1개월 무료</strong></div></div>
-      <div class="cert-reward-item"><div class="cert-reward-grade grade-3">3등 🥉</div><div class="cert-reward-desc">인증 시<br><strong>6개월 무료</strong></div></div>
-      <div class="cert-reward-item"><div class="cert-reward-grade grade-4">2등 🥈</div><div class="cert-reward-desc">인증 시<br><strong>1년 무료</strong></div></div>
-      <div class="cert-reward-item"><div class="cert-reward-grade grade-1">1등 👑</div><div class="cert-reward-desc">인증 시<br><strong>영구무료+명예의전당</strong></div></div>
-    </div>
+
     <div class="card">
       <div class="card-title">✍️ 당첨 인증하기</div>
       <div class="cert-form">
@@ -1521,17 +1515,7 @@ async function loadCertsOnInit() {
 }
 setTimeout(loadCertsOnInit, 1500);
 
-let certList = JSON.parse(localStorage.getItem('lottoCert') || 'null');
-if (!certList) {
-  certList = [
-    { grade: '5', nickname: '부산복덩이', message: '5등이지만 너무 기뻐요!! 처음 당첨됐어요', date: '2026.02.21', likes: 12 },
-    { grade: '3', nickname: '대구복권왕', message: '3등 당첨!! 150만원 ㄷㄷ 로또복덩이 최고!!', date: '2026.02.14', likes: 47 },
-    { grade: '4', nickname: '인천행운아', message: '4등 5만원!! 치킨 사먹겠습니다 ㅋㅋ', date: '2026.02.14', likes: 8 },
-    { grade: '5', nickname: '강남럭키', message: '로또복덩이 번호 믿고 샀더니 5등 됐어요!', date: '2026.02.14', likes: 15 },
-    { grade: '5', nickname: '제주도민', message: '5천원이지만 기분은 27억 ㅋㅋㅋ 복덩이 화이팅!', date: '2026.02.07', likes: 6 },
-  ];
-  localStorage.setItem('lottoCert', JSON.stringify(certList));
-}
+let certList = JSON.parse(localStorage.getItem('lottoCert') || '[]');
 
 async function submitCert() {
   const grade = document.getElementById('cert-grade').value;
@@ -1577,7 +1561,7 @@ async function submitCert() {
     document.getElementById('cert-photo-preview').style.display = 'none';
     document.querySelector('.cert-photo-text').innerHTML = '<strong>당첨 인증샷 올리기</strong> (선택사항)<br>당첨 화면 캡처를 올려주세요!';
     renderCert();
-    if (grade === '1') alert('🎊 축하합니다!! 1등!! 관리자에게 인증샷을 보내주시면 영구 무료 혜택을 드려요!');
+    if (grade === '1') alert('🎊 축하합니다!! 1등 당첨!! 정말 대단해요!');
     else alert('✅ 인증이 등록됐어요! 감사합니다 🍀');
   }
 

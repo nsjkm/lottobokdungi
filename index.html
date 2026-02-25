@@ -1542,11 +1542,27 @@ async function submitCert() {
   if (!nickname) { alert('닉네임을 입력해주세요!'); return; }
 
   async function saveEntry(photoData) {
+    let photoUrl = null;
+    // Cloudinary 업로드
+    if (photoData) {
+      try {
+        const formData = new FormData();
+        formData.append('file', photoData);
+        formData.append('upload_preset', 'lottobokdungi');
+        formData.append('cloud_name', 'dzeha38w0');
+        const res = await fetch('https://api.cloudinary.com/v1_1/dzeha38w0/image/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        photoUrl = data.secure_url || null;
+      } catch(e) { photoUrl = photoData; } // 실패시 base64 그대로
+    }
     const certData = {
       grade, nickname, message,
       date: new Date().toLocaleDateString('ko-KR'),
       likes: 0,
-      photo: photoData || null,
+      photo: photoUrl,
       createdAt: new Date().toISOString()
     };
 

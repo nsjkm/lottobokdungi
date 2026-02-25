@@ -720,6 +720,128 @@
   }
 
 </style>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, orderBy, query, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCiBpw15eRlsp_KDG2aQhqoAfDKLjAeowI",
+    authDomain: "lottobokdungi.firebaseapp.com",
+    projectId: "lottobokdungi",
+    storageBucket: "lottobokdungi.firebasestorage.app",
+    messagingSenderId: "43441831820",
+    appId: "1:43441831820:web:bc8fd8394c9876aef2e0a9",
+    measurementId: "G-9R1X71FNS4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  // 전역 노출
+  window.fbAuth = auth;
+  window.fbDb = db;
+  window.fbFunctions = {
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signOut, onAuthStateChanged, GoogleAuthProvider,
+    signInWithPopup, doc, setDoc, getDoc, collection,
+    addDoc, getDocs, orderBy, query, updateDoc, increment
+  };
+
+  // 로그인 상태 감지
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('auth-btn').textContent = '내 정보';
+      document.getElementById('auth-btn').onclick = showMyPage;
+      document.getElementById('logout-btn').style.display = 'inline-block';
+      document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
+      document.getElementById('user-info').style.display = 'flex';
+      // Firestore에서 당첨인증 불러오기
+      loadCertFromFirestore();
+    } else {
+      document.getElementById('auth-btn').textContent = '로그인';
+      document.getElementById('auth-btn').onclick = showAuthModal;
+      document.getElementById('logout-btn').style.display = 'none';
+      document.getElementById('user-info').style.display = 'none';
+    }
+  });
+
+  // 로그인/회원가입
+  window.doEmailAuth = async function(isLogin) {
+    const email = document.getElementById('auth-email').value;
+    const pw = document.getElementById('auth-pw').value;
+    const nick = document.getElementById('auth-nick')?.value;
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, pw);
+      } else {
+        const cred = await createUserWithEmailAndPassword(auth, email, pw);
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          email, nickname: nick || email.split('@')[0],
+          createdAt: new Date().toISOString()
+        });
+      }
+      closeAuthModal();
+    } catch(e) {
+      let msg = '오류가 발생했어요!';
+      if (e.code === 'auth/email-already-in-use') msg = '이미 사용중인 이메일이에요!';
+      if (e.code === 'auth/wrong-password') msg = '비밀번호가 틀렸어요!';
+      if (e.code === 'auth/user-not-found') msg = '등록되지 않은 이메일이에요!';
+      if (e.code === 'auth/weak-password') msg = '비밀번호는 6자 이상이어야 해요!';
+      document.getElementById('auth-error').textContent = msg;
+    }
+  };
+
+  // 구글 로그인
+  window.doGoogleLogin = async function() {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        nickname: user.displayName || user.email.split('@')[0],
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+      closeAuthModal();
+    } catch(e) {
+      document.getElementById('auth-error').textContent = '구글 로그인 실패!';
+    }
+  };
+
+  // 로그아웃
+  window.doLogout = async function() {
+    await signOut(auth);
+  };
+
+  // Firestore에 당첨인증 저장
+  window.saveCertToFirestore = async function(certData) {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+      await addDoc(collection(db, 'certs'), {
+        ...certData,
+        uid: user.uid,
+        createdAt: new Date().toISOString()
+      });
+    } catch(e) {}
+  };
+
+  // Firestore에서 당첨인증 불러오기
+  window.loadCertFromFirestore = async function() {
+    try {
+      const q = query(collection(db, 'certs'), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        certList = snap.docs.map(d => ({...d.data(), id: d.id}));
+        localStorage.setItem('lottoCert', JSON.stringify(certList));
+        renderCert();
+      }
+    } catch(e) {}
+  };
+</script>
 </head>
 <body>
 <div class="container">
@@ -729,6 +851,48 @@
     <div class="logo">로또복덩이</div>
     <div class="logo-sub">🍀 복덩이가 행운을 가져다드려요 🍀</div>
   </header>
+
+  <!-- Auth Bar -->
+  <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:8px 16px 0;">
+    <div id="user-info" style="display:none;align-items:center;gap:8px;">
+      <span style="font-size:13px;color:#FFD700;">👤 <span id="user-name"></span>님</span>
+    </div>
+    <button id="auth-btn" onclick="showAuthModal()" style="background:rgba(255,215,0,0.15);border:1px solid #FFD700;color:#FFD700;padding:6px 16px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;">로그인</button>
+    <button id="logout-btn" onclick="doLogout()" style="display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#aaa;padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;">로그아웃</button>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:#12122a;border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:32px;width:90%;max-width:360px;position:relative;">
+      <button onclick="closeAuthModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;">✕</button>
+      
+      <!-- 탭 -->
+      <div style="display:flex;gap:0;margin-bottom:24px;background:rgba(255,255,255,0.05);border-radius:12px;padding:4px;">
+        <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:10px;border:none;border-radius:10px;background:#FFD700;color:#000;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;">로그인</button>
+        <button id="tab-signup" onclick="switchAuthTab('signup')" style="flex:1;padding:10px;border:none;border-radius:10px;background:transparent;color:#aaa;font-size:14px;cursor:pointer;font-family:inherit;">회원가입</button>
+      </div>
+
+      <!-- 구글 로그인 -->
+      <button onclick="doGoogleLogin()" style="width:100%;padding:12px;background:white;color:#333;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:20px;height:20px;">
+        구글로 계속하기
+      </button>
+
+      <div style="text-align:center;color:#555;font-size:12px;margin-bottom:16px;">또는</div>
+
+      <!-- 닉네임 (회원가입만) -->
+      <div id="nick-field" style="display:none;margin-bottom:10px;">
+        <input id="auth-nick" placeholder="닉네임" style="width:100%;padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:inherit;">
+      </div>
+
+      <input id="auth-email" type="email" placeholder="이메일" style="width:100%;padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:white;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit;">
+      <input id="auth-pw" type="password" placeholder="비밀번호 (6자 이상)" style="width:100%;padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:white;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit;">
+      
+      <p id="auth-error" style="color:#ff6b6b;font-size:12px;margin-bottom:10px;text-align:center;"></p>
+
+      <button id="auth-submit-btn" onclick="doEmailAuth(true)" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;color:#000;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;">로그인</button>
+    </div>
+  </div>
 
   <!-- Jackpot Banner -->
   <div class="jackpot-banner">
@@ -1455,6 +1619,33 @@ if ('serviceWorker' in navigator) {
     regs.forEach(reg => reg.unregister());
   });
 }
+
+// ===================== AUTH UI =====================
+function showAuthModal() {
+  document.getElementById('auth-modal').style.display = 'flex';
+}
+function closeAuthModal() {
+  document.getElementById('auth-modal').style.display = 'none';
+  document.getElementById('auth-error').textContent = '';
+}
+function showMyPage() {
+  alert('내 정보 페이지는 준비 중이에요!');
+}
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tab-login').style.background = isLogin ? '#FFD700' : 'transparent';
+  document.getElementById('tab-login').style.color = isLogin ? '#000' : '#aaa';
+  document.getElementById('tab-signup').style.background = isLogin ? 'transparent' : '#FFD700';
+  document.getElementById('tab-signup').style.color = isLogin ? '#aaa' : '#000';
+  document.getElementById('nick-field').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('auth-submit-btn').textContent = isLogin ? '로그인' : '회원가입';
+  document.getElementById('auth-submit-btn').onclick = () => doEmailAuth(isLogin);
+  document.getElementById('auth-error').textContent = '';
+}
+// 모달 바깥 클릭시 닫기
+document.getElementById('auth-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeAuthModal();
+});
 </script>
 </body>
 </html>

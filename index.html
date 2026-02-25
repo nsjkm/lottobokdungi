@@ -1546,31 +1546,17 @@ async function submitCert() {
     // Cloudinary 업로드
     if (photoData) {
       try {
-        // base64에서 blob으로 변환
-        const base64Data = photoData.split(',')[1];
-        const byteChars = atob(base64Data);
-        const byteArr = new Uint8Array(byteChars.length);
-        for(let i=0; i<byteChars.length; i++) byteArr[i] = byteChars.charCodeAt(i);
-        const blob = new Blob([byteArr], {type: 'image/jpeg'});
-        
         const formData = new FormData();
-        formData.append('file', blob, 'cert.jpg');
+        formData.append('file', photoData);
         formData.append('upload_preset', 'lottobokdungi');
-        
         const res = await fetch('https://api.cloudinary.com/v1_1/dzeha38w0/image/upload', {
           method: 'POST',
           body: formData
         });
         const data = await res.json();
-        if (data.secure_url) {
-          photoUrl = data.secure_url;
-        } else {
-          console.log('Cloudinary 오류:', data);
-          photoUrl = photoData; // 실패시 base64
-        }
-      } catch(e) { 
-        console.log('업로드 오류:', e);
-        photoUrl = photoData; 
+        photoUrl = data.secure_url || photoData;
+      } catch(e) {
+        photoUrl = photoData;
       }
     }
     const certData = {
@@ -1648,6 +1634,7 @@ function buildCertItem(c, idx) {
   html += '<span class="cert-nickname">' + c.nickname + '</span></div>';
   html += '<span class="cert-date">' + c.date + '</span></div>';
   if (c.message) html += '<div class="cert-message">&quot;' + c.message + '&quot;</div>';
+  if (c.photo) html += '<img src="' + c.photo + '" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-top:10px;" onerror="this.style.display=\'none\'">';
   html += '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">';
   html += '<button class="like-btn" onclick="toggleLike(' + idx + ')">👍 ' + (c.likes||0) + '</button>';
   html += '<button class="comment-toggle" onclick="toggleCommentBox(\'' + cid + '\')">💬 댓글 ' + (c.comments ? c.comments.length : 0) + '</button>';

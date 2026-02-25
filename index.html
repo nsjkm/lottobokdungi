@@ -1569,6 +1569,37 @@ function gradeLabel(g) {
   return { '1':'👑 1등', '2':'🥈 2등', '3':'🥉 3등', '4':'4등', '5':'5등' }[g] || g+'등';
 }
 
+function buildCertItem(c, idx) {
+  const cid = c.id || String(idx);
+  let commentsHtml = '';
+  if (c.comments && c.comments.length > 0) {
+    commentsHtml = c.comments.map(function(cm) {
+      return '<div class="comment-item"><span class="comment-nick">' + cm.nick + '</span><span>' + cm.text + '</span></div>';
+    }).join('');
+  } else {
+    commentsHtml = '<div style="font-size:11px;color:#666;padding:4px 0;">첫 댓글을 남겨보세요!</div>';
+  }
+  var html = '';
+  html += '<div class="cert-item ' + (c.grade==='1' ? 'grade-1-item' : '') + '">';
+  html += '<div class="cert-item-header"><div class="cert-item-left">';
+  html += '<span class="cert-grade-badge badge-' + c.grade + '">' + gradeLabel(c.grade) + '</span>';
+  html += '<span class="cert-nickname">' + c.nickname + '</span></div>';
+  html += '<span class="cert-date">' + c.date + '</span></div>';
+  if (c.message) html += '<div class="cert-message">&quot;' + c.message + '&quot;</div>';
+  html += '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">';
+  html += '<button class="like-btn" onclick="toggleLike(' + idx + ')">👍 ' + (c.likes||0) + '</button>';
+  html += '<button class="comment-toggle" onclick="toggleCommentBox(\'' + cid + '\')">💬 댓글 ' + (c.comments ? c.comments.length : 0) + '</button>';
+  html += '</div>';
+  html += '<div id="comment-box-' + cid + '" style="display:none">';
+  html += '<div class="comment-section">' + commentsHtml + '</div>';
+  html += '<div class="comment-input-row">';
+  html += '<input class="comment-input" id="cnick-' + cid + '" placeholder="닉네임">';
+  html += '<input class="comment-input" id="ctext-' + cid + '" placeholder="댓글 내용">';
+  html += '<button class="comment-btn" onclick="submitComment(\'' + cid + '\',' + idx + ')">등록</button>';
+  html += '</div></div></div>';
+  return html;
+}
+
 function renderCert() {
   const list = document.getElementById('cert-list');
   const countEl = document.getElementById('cert-count');
@@ -1584,20 +1615,7 @@ function renderCert() {
     list.innerHTML = '<div class="cert-empty"><div class="cert-empty-icon">🍀</div><div>아직 인증이 없어요!<br>첫 번째 당첨자가 되어보세요!</div></div>';
     return;
   }
-  list.innerHTML = certList.map((c, idx) =>
-    '<div class="cert-item '+(c.grade==='1'?'grade-1-item':'')+'">' +
-    '<div class="cert-item-header"><div class="cert-item-left"><span class="cert-grade-badge badge-'+c.grade+'">'+gradeLabel(c.grade)+'</span><span class="cert-nickname">'+c.nickname+'</span></div><span class="cert-date">'+c.date+'</span></div>' +
-    (c.message ? '<div class="cert-message">"'+c.message+'"</div>' : '') +
-    '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;"><button class="like-btn" onclick="toggleLike('+idx+')">👍 '+(c.likes||0)+'</button><button class="comment-toggle" onclick="toggleCommentBox(\'' + (c.id||idx) + \')">💬 댓글 '+(c.comments?c.comments.length:0)+'</button></div>' +
-    '<div id="comment-box-'+(c.id||idx)+'" style="display:none">' +
-    '<div class="comment-section">' +
-    (c.comments && c.comments.length > 0 ? c.comments.map(cm => '<div class="comment-item"><span class="comment-nick">'+cm.nick+'</span><span>'+cm.text+'</span></div>').join('') : '<div style="font-size:11px;color:#666;padding:4px 0;">첫 댓글을 남겨보세요!</div>') +
-    '</div>' +
-    '<div class="comment-input-row">' +
-    '<input class="comment-input" id="cnick-'+(c.id||idx)+'" placeholder="닉네임">' +
-    '<input class="comment-input" id="ctext-'+(c.id||idx)+'" placeholder="댓글 내용">' +
-    '<button class="comment-btn" onclick="submitComment(\'' + (c.id||idx) + '\','+idx+')">등록</button>' +
-    '</div></div></div>'
+  list.innerHTML = certList.map((c, idx) => buildCertItem(c, idx)
   ).join('');
 }
 renderCert();

@@ -1543,18 +1543,10 @@ async function submitCert() {
 
   async function saveEntry(photoData) {
     let photoUrl = null;
-    // Cloudinary 업로드
+    // 사진 압축 후 저장
     if (photoData) {
       try {
-        const formData = new FormData();
-        formData.append('file', photoData);
-        formData.append('upload_preset', 'lottobokdungi');
-        const res = await fetch('https://api.cloudinary.com/v1_1/dzeha38w0/image/upload', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        photoUrl = data.secure_url || photoData;
+        photoUrl = await compressImage(photoData, 400, 0.5);
       } catch(e) {
         photoUrl = photoData;
       }
@@ -1750,6 +1742,25 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+
+
+// 이미지 압축 함수
+function compressImage(base64, maxWidth, quality) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = base64;
+  });
+}
 
 // ===================== COMMENTS =====================
 function toggleCommentBox(certId) {

@@ -1462,6 +1462,25 @@ calcNextDraw();
 
 // ===================== CERT =====================
 localStorage.removeItem('lottoCert');
+// Firestore에서 인증 불러오기 (페이지 로드시)
+async function loadCertsOnInit() {
+  if (!window.fbDb || !window.fbFunctions) {
+    setTimeout(loadCertsOnInit, 1000);
+    return;
+  }
+  try {
+    const { collection, getDocs, orderBy, query } = window.fbFunctions;
+    const q = query(collection(window.fbDb, 'certs'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      certList = snap.docs.map(d => ({...d.data(), id: d.id}));
+      localStorage.setItem('lottoCert', JSON.stringify(certList));
+      renderCert();
+    }
+  } catch(e) {}
+}
+setTimeout(loadCertsOnInit, 1500);
+
 let certList = JSON.parse(localStorage.getItem('lottoCert') || 'null');
 if (!certList) {
   certList = [
@@ -1474,7 +1493,7 @@ if (!certList) {
   localStorage.setItem('lottoCert', JSON.stringify(certList));
 }
 
-function submitCert() {
+async function submitCert() {
   const grade = document.getElementById('cert-grade').value;
   const nickname = document.getElementById('cert-nickname').value.trim();
   const message = document.getElementById('cert-message').value.trim();
@@ -1482,8 +1501,25 @@ function submitCert() {
   if (!grade) { alert('등수를 선택해주세요!'); return; }
   if (!nickname) { alert('닉네임을 입력해주세요!'); return; }
 
-  function saveEntry(photoData) {
-    certList.unshift({ grade, nickname, message, date: new Date().toLocaleDateString('ko-KR'), likes: 0, photo: photoData || null });
+  async function saveEntry(photoData) {
+    const certData = {
+      grade, nickname, message,
+      date: new Date().toLocaleDateString('ko-KR'),
+      likes: 0,
+      photo: photoData || null,
+      createdAt: new Date().toISOString()
+    };
+
+    // Firestore에 저장
+    if (window.fbDb && window.fbFunctions) {
+      try {
+        const { collection, addDoc } = window.fbFunctions;
+        const docRef = await addDoc(collection(window.fbDb, 'certs'), certData);
+        certData.id = docRef.id;
+      } catch(e) { console.log('Firestore 저장 실패', e); }
+    }
+
+    certList.unshift(certData);
     localStorage.setItem('lottoCert', JSON.stringify(certList));
     document.getElementById('cert-grade').value = '';
     document.getElementById('cert-nickname').value = '';
@@ -1505,8 +1541,17 @@ function submitCert() {
   }
 }
 
-function toggleLike(idx) {
+async function toggleLike(idx) {
   certList[idx].likes = (certList[idx].likes || 0) + 1;
+
+  // Firestore 좋아요 업데이트
+  if (window.fbDb && window.fbFunctions && certList[idx].id) {
+    try {
+      const { doc, updateDoc, increment } = window.fbFunctions;
+      await updateDoc(doc(window.fbDb, 'certs', certList[idx].id), { likes: increment(1) });
+    } catch(e) {}
+  }
+
   localStorage.setItem('lottoCert', JSON.stringify(certList));
   renderCert();
 }

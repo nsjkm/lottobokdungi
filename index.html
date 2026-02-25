@@ -770,6 +770,18 @@
       document.getElementById('user-info').style.display = 'flex';
       // Firestore에서 당첨인증 불러오기
       loadCertFromFirestore();
+      // Firestore에서 저장번호 불러오기
+      try {
+        const savedDoc = await getDoc(doc(db, 'saved', user.uid));
+        if (savedDoc.exists() && savedDoc.data().numbers) {
+          const cloudNums = savedDoc.data().numbers;
+          if (cloudNums.length > 0) {
+            savedNumbers = cloudNums;
+            localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers));
+            if (typeof renderSaved === 'function') renderSaved();
+          }
+        }
+      } catch(e) {}
     } else {
       document.getElementById('auth-btn').textContent = '로그인';
       document.getElementById('auth-btn').onclick = showAuthModal;
@@ -1272,6 +1284,14 @@ function saveCurrentNumbers() {
   if (savedNumbers.length > 20) savedNumbers.pop();
   localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers));
   renderSaved();
+  // Firestore에 저장 (로그인한 경우)
+  if (window.fbAuth && window.fbAuth.currentUser && window.fbDb && window.fbFunctions) {
+    try {
+      const uid = window.fbAuth.currentUser.uid;
+      const { doc, setDoc } = window.fbFunctions;
+      setDoc(doc(window.fbDb, 'saved', uid), { numbers: savedNumbers });
+    } catch(e) {}
+  }
   // Flash feedback
   const btn = event.target;
   btn.textContent = '✅ 저장됨!';
@@ -1298,7 +1318,18 @@ function renderSaved() {
     const del = document.createElement('button');
     del.className = 'del-btn';
     del.textContent = '×';
-    del.onclick = () => { savedNumbers.splice(idx, 1); localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers)); renderSaved(); };
+    del.onclick = () => {
+      savedNumbers.splice(idx, 1);
+      localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers));
+      renderSaved();
+      if (window.fbAuth && window.fbAuth.currentUser && window.fbDb && window.fbFunctions) {
+        try {
+          const uid = window.fbAuth.currentUser.uid;
+          const { doc, setDoc } = window.fbFunctions;
+          setDoc(doc(window.fbDb, 'saved', uid), { numbers: savedNumbers });
+        } catch(e) {}
+      }
+    };
     item.appendChild(ballsDiv);
     item.appendChild(meta);
     item.appendChild(del);

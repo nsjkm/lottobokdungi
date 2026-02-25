@@ -761,7 +761,7 @@
   };
 
   // 로그인 상태 감지
-  onAuthStateChanged(auth, user => {
+  onAuthStateChanged(auth, async user => {
     if (user) {
       document.getElementById('auth-btn').textContent = '내 정보';
       document.getElementById('auth-btn').onclick = showMyPage;

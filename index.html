@@ -972,13 +972,13 @@
   </div>
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('generate')">행운 뽑기</button>
-    <button class="tab" onclick="switchTab('multiple')">자동 뽑기</button>
-    <button class="tab" onclick="switchTab('saved')">저장 번호</button>
-    <button class="tab" onclick="switchTab('stats')">통계</button>
-    <button class="tab" onclick="switchTab('past')">당첨번호</button>
-    <button class="tab" onclick="switchTab('cert')">당첨인증</button>
-    <button class="tab" onclick="switchTab('nearby')">📍 내주변</button>
+    <button class="tab active" onclick="switchTab('generate', this)">행운 뽑기</button>
+    <button class="tab" onclick="switchTab('multiple', this)">자동 뽑기</button>
+    <button class="tab" onclick="switchTab('saved', this)">저장 번호</button>
+    <button class="tab" onclick="switchTab('stats', this)">통계</button>
+    <button class="tab" onclick="switchTab('past', this)">당첨번호</button>
+    <button class="tab" onclick="switchTab('cert', this)">당첨인증</button>
+    <button class="tab" onclick="switchTab('nearby', this)">📍 내주변</button>
   </div>
 
   <!-- Tab: 번호 생성 -->
@@ -1054,13 +1054,13 @@
 
 
   <!-- Tab: 내주변 명당 -->
-  <div id="tab-nearby" class="tab-content" style="display:none;">
+  <div id="tab-nearby" class="tab-panel">
     <div style="padding:16px 0;">
       <div style="text-align:center;margin-bottom:16px;">
         <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:6px;">📍 내 주변 복권판매점</div>
         <div style="font-size:13px;color:var(--muted);">위치를 허용하면 주변 판매점을 찾아드려요!</div>
       </div>
-      <button onclick="findNearby()" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:14px;font-size:16px;font-weight:900;color:#000;cursor:pointer;margin-bottom:16px;">
+      <button onclick="findNearby(this)" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:14px;font-size:16px;font-weight:900;color:#000;cursor:pointer;margin-bottom:16px;">
         🔍 내 주변 판매점 찾기
       </button>
       <div id="nearby-map" style="width:100%;height:380px;border-radius:16px;overflow:hidden;display:none;"></div>
@@ -1496,11 +1496,17 @@ function renderPast() {
 }
 
 // ===================== TABS =====================
-function switchTab(name) {
+function switchTab(name, el) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(`tab-${name}`).classList.add('active');
-  event.target.classList.add('active');
+  const panel = document.getElementById('tab-' + name);
+  if (panel) panel.classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'nearby' && window._nearbyMap) {
+    setTimeout(function() {
+      kakao.maps.event.trigger(window._nearbyMap, 'resize');
+    }, 100);
+  }
 }
 
 // ===================== INIT =====================
@@ -1808,12 +1814,11 @@ function compressImage(base64, maxWidth, quality) {
 
 
 // ===================== 내주변 명당 =====================
-function findNearby() {
+function findNearby(btn) {
   if (!navigator.geolocation) {
     alert('이 브라우저는 위치 서비스를 지원하지 않아요!');
     return;
   }
-  const btn = event.target;
   btn.textContent = '📍 위치 확인 중...';
   btn.disabled = true;
 
@@ -1821,14 +1826,20 @@ function findNearby() {
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
 
-    document.getElementById('nearby-map').style.display = 'block';
+    const mapDiv = document.getElementById('nearby-map');
+    mapDiv.style.display = 'block';
+    mapDiv.style.width = '100%';
+    mapDiv.style.height = '380px';
 
-    const container = document.getElementById('nearby-map');
-    const options = {
-      center: new kakao.maps.LatLng(lat, lng),
-      level: 4
-    };
-    const map = new kakao.maps.Map(container, options);
+    // 지도 컨테이너가 렌더링된 후 초기화
+    setTimeout(function() {
+      const container = document.getElementById('nearby-map');
+      const options = {
+        center: new kakao.maps.LatLng(lat, lng),
+        level: 4
+      };
+      const map = new kakao.maps.Map(container, options);
+      window._nearbyMap = map; // 전역 저장 (리사이즈용)
 
     // 내 위치 마커
     const myMarker = new kakao.maps.Marker({
@@ -1881,11 +1892,12 @@ function findNearby() {
       sort: kakao.maps.services.SortBy.DISTANCE
     });
 
-    btn.textContent = '🔍 내 주변 판매점 찾기';
-    btn.disabled = false;
+      btn.textContent = '🔍 내 주변 판매점 찾기';
+      btn.disabled = false;
+    }, 300); // 300ms 후 지도 초기화
 
   }, function() {
-    alert('위치 권한을 허용해주세요!');
+    alert('위치 권한을 허용해주세요! 브라우저 설정에서 위치 허용을 확인해주세요.');
     btn.textContent = '🔍 내 주변 판매점 찾기';
     btn.disabled = false;
   });

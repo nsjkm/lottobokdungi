@@ -899,7 +899,7 @@
     } catch(e) {}
   };
 </script>
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=832da0c4603df4e7e4e1cbbe03675264&libraries=services"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ca5b3d09056503f43e2ce1bdcf81efb8&libraries=services"></script>
 </head>
 <body>
 <div class="container">
@@ -1819,95 +1819,88 @@ function compressImage(base64, maxWidth, quality) {
 // ===================== 내주변 명당 =====================
 function findNearby(btn) {
   if (!navigator.geolocation) {
-    alert('이 브라우저는 위치 서비스를 지원하지 않아요!');
+    alert('위치 서비스 미지원 브라우저예요!');
     return;
   }
+
   btn.textContent = '📍 위치 확인 중...';
   btn.disabled = true;
 
-  navigator.geolocation.getCurrentPosition(function(pos) {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-
-    // 컨테이너 초기화
-    const container = document.getElementById('nearby-map');
-    container.innerHTML = '';
-
-    // kakao.maps.load 없이 직접 사용 (autoload=false여도 SDK 태그 방식이면 이미 로드됨)
-    try {
-      const options = {
-        center: new kakao.maps.LatLng(lat, lng),
-        level: 4
-      };
-      const map = new kakao.maps.Map(container, options);
-      window._nearbyMap = map;
-
-      // 내 위치 마커
-      new kakao.maps.Marker({
-        position: new kakao.maps.LatLng(lat, lng),
-        map: map,
-        title: '내 위치'
-      });
-
-      // 내 위치 인포윈도우
-      const myInfo = new kakao.maps.InfoWindow({
-        content: '<div style="padding:5px 8px;font-size:12px;font-weight:700;color:#333;">📍 내 위치</div>'
-      });
-      myInfo.open(map, new kakao.maps.Marker({
-        position: new kakao.maps.LatLng(lat, lng),
-        map: map
-      }));
-
-      // 복권판매점 검색
-      const ps = new kakao.maps.services.Places();
-      ps.keywordSearch('복권판매점', function(data, status) {
-        const list = document.getElementById('nearby-list');
-        if (status === kakao.maps.services.Status.OK && data.length > 0) {
-          list.innerHTML = '<div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:10px;">🏪 주변 판매점 ' + data.length + '곳 발견!</div>';
-          data.forEach(function(place) {
-            const marker = new kakao.maps.Marker({
-              position: new kakao.maps.LatLng(place.y, place.x),
-              map: map
-            });
-            const iw = new kakao.maps.InfoWindow({
-              content: '<div style="padding:5px 8px;font-size:12px;color:#333;max-width:160px;">' + place.place_name + '</div>'
-            });
-            kakao.maps.event.addListener(marker, 'click', function() { iw.open(map, marker); });
-
-            const item = document.createElement('div');
-            item.style.cssText = 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;';
-            item.innerHTML =
-              '<div style="font-weight:700;color:var(--text);margin-bottom:4px;">🏪 ' + place.place_name + '</div>' +
-              '<div style="font-size:12px;color:var(--muted);">📍 ' + place.address_name + '</div>' +
-              (place.phone ? '<div style="font-size:12px;color:var(--gold);margin-top:4px;">📞 ' + place.phone + '</div>' : '');
-            item.onclick = function() {
-              map.setCenter(new kakao.maps.LatLng(place.y, place.x));
-              iw.open(map, marker);
-            };
-            list.appendChild(item);
-          });
-        } else {
-          list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">주변 2km에 판매점을 찾지 못했어요 😢</div>';
-        }
-      }, {
-        location: new kakao.maps.LatLng(lat, lng),
-        radius: 2000,
-        sort: kakao.maps.services.SortBy.DISTANCE
-      });
-
-    } catch(e) {
-      alert('지도 로드 실패: ' + e.message + '\n\n페이지를 새로고침 후 다시 시도해주세요.');
-    }
-
-    btn.textContent = '🔄 다시 검색';
-    btn.disabled = false;
-
-  }, function(err) {
-    alert('위치 권한을 허용해주세요!\n브라우저 주소창 옆 자물쇠 아이콘 → 위치 허용');
+  function resetBtn() {
     btn.textContent = '🔍 주변 판매점 찾기';
     btn.disabled = false;
-  }, { enableHighAccuracy: true, timeout: 10000 });
+  }
+
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude;
+    var lng = pos.coords.longitude;
+
+    var container = document.getElementById('nearby-map');
+    container.innerHTML = '';
+
+    if (typeof kakao === 'undefined' || typeof kakao.maps === 'undefined') {
+      alert('카카오맵 로드 실패!\n페이지 새로고침 후 다시 시도해주세요.');
+      resetBtn();
+      return;
+    }
+
+    var center = new kakao.maps.LatLng(lat, lng);
+    var map = new kakao.maps.Map(container, { center: center, level: 4 });
+    window._nearbyMap = map;
+
+    // 내 위치 마커
+    var myMarker = new kakao.maps.Marker({ position: center, map: map });
+    var myIW = new kakao.maps.InfoWindow({
+      content: '<div style="padding:5px 8px;font-size:12px;font-weight:700;color:#333;">📍 내 위치</div>'
+    });
+    myIW.open(map, myMarker);
+
+    // 판매점 검색
+    var ps = new kakao.maps.services.Places();
+    ps.keywordSearch('복권판매점', function(data, status) {
+      var list = document.getElementById('nearby-list');
+      list.innerHTML = '';
+
+      if (status === kakao.maps.services.Status.OK && data.length > 0) {
+        list.innerHTML = '<div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:10px;">🏪 주변 판매점 ' + data.length + '곳 발견!</div>';
+        data.forEach(function(place) {
+          var pos = new kakao.maps.LatLng(place.y, place.x);
+          var marker = new kakao.maps.Marker({ position: pos, map: map });
+          var iw = new kakao.maps.InfoWindow({
+            content: '<div style="padding:5px 8px;font-size:12px;color:#333;">' + place.place_name + '</div>'
+          });
+          kakao.maps.event.addListener(marker, 'click', function() { iw.open(map, marker); });
+
+          var item = document.createElement('div');
+          item.style.cssText = 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;';
+          item.innerHTML =
+            '<div style="font-weight:700;color:var(--text);margin-bottom:4px;">🏪 ' + place.place_name + '</div>' +
+            '<div style="font-size:12px;color:var(--muted);">📍 ' + place.address_name + '</div>' +
+            (place.phone ? '<div style="font-size:12px;color:var(--gold);margin-top:4px;">📞 ' + place.phone + '</div>' : '');
+          item.onclick = function() { map.setCenter(pos); iw.open(map, marker); };
+          list.appendChild(item);
+        });
+      } else {
+        list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">주변 2km에 판매점이 없어요 😢</div>';
+      }
+    }, {
+      location: center,
+      radius: 2000,
+      sort: kakao.maps.services.SortBy.DISTANCE
+    });
+
+    resetBtn();
+
+  }, function(err) {
+    var msg = '위치 권한을 허용해주세요!\n';
+    if (err.code === 1) msg += '브라우저 주소창 🔒 → 위치 → 허용';
+    else if (err.code === 2) msg += '위치를 가져올 수 없어요. GPS를 켜주세요.';
+    else if (err.code === 3) msg += '위치 요청 시간이 초과됐어요.';
+    alert(msg);
+    resetBtn();
+  }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
 }
+
 
 // ===================== COMMENTS =====================
 function toggleCommentBox(certId) {

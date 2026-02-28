@@ -899,7 +899,7 @@
     } catch(e) {}
   };
 </script>
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=832da0c4603df4e7e4e1cbbe03675264&libraries=services"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=832da0c4603df4e7e4e1cbbe03675264&libraries=services&autoload=false"></script>
 </head>
 <body>
 <div class="container">
@@ -1822,6 +1822,7 @@ function findNearby(btn) {
   btn.textContent = '📍 위치 확인 중...';
   btn.disabled = true;
 
+  kakao.maps.load(function() {
   navigator.geolocation.getCurrentPosition(function(pos) {
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
@@ -1901,6 +1902,7 @@ function findNearby(btn) {
     btn.textContent = '🔍 내 주변 판매점 찾기';
     btn.disabled = false;
   });
+  }); // kakao.maps.load 닫기
 }
 
 // ===================== COMMENTS =====================

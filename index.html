@@ -1530,33 +1530,30 @@ generateMultiple();
 
 
 // ===================== JACKPOT =====================
-async function fetchJackpot() {
-  // 회차 자동 계산 (1213회 = 2026-03-01 기준)
-  const baseRound = 1213;
-  const baseDate = new Date('2026-03-01T21:00:00+09:00');
+function fetchJackpot() {
+  // 수동 업데이트 데이터 (매주 토요일 밤 업데이트)
+  const lastRound = 1213;
+  const lastPrize = 1740011646;
+  const lastDate = '2026-03-01T21:00:00+09:00';
+
+  // 당첨금 표시
+  document.getElementById('jackpot-amount').textContent = '₩ ' + lastPrize.toLocaleString('ko-KR');
+  document.getElementById('jackpot-label').textContent = `저번주 1등 당첨금 (${lastRound}회)`;
+
+  // 이번주 회차 계산
+  const baseDate = new Date(lastDate);
   const now = new Date();
-  const dayOfWeek = now.getDay();
-  const hour = now.getHours();
   const diffMs = now - baseDate;
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
-  let weeksPassed = Math.floor(diffDays / 7);
-  if (diffDays < 0) weeksPassed = 0;
-  // 토요일 오후 9시 이전은 아직 이번회차 추첨 전
-  let currentRound = baseRound + weeksPassed + (diffDays >= 0 ? 1 : 0);
-  if (diffDays >= 0 && dayOfWeek === 6 && hour < 21 && diffDays % 7 < 1) {
-    currentRound = baseRound + weeksPassed;
+  const dayOfWeek = now.getDay();
+  const hour = now.getHours();
+  let weeksPassed = Math.max(0, Math.floor(diffDays / 7));
+  let currentRound = lastRound + weeksPassed + 1;
+  // 토요일 오후 9시 이전 = 이번주 아직 추첨 전
+  if (dayOfWeek === 6 && hour < 21 && diffDays % 7 < 1) {
+    currentRound = lastRound + weeksPassed;
   }
   document.getElementById('current-round').textContent = currentRound;
-
-  try {
-    const res = await fetch('/api/lotto');
-    const data = await res.json();
-    if (data.prize && data.prize > 0) {
-      document.getElementById('jackpot-amount').textContent = '₩ ' + data.prize.toLocaleString('ko-KR');
-      document.getElementById('jackpot-label').textContent = `저번주 1등 당첨금 (${data.round}회)`;
-      document.getElementById('current-round').textContent = data.round + 1;
-    }
-  } catch(e) {}
 }
 
 // 다음 당첨일 계산

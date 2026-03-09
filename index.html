@@ -1034,13 +1034,13 @@
     <div class="footer-bottom">
       <span>🍀 로또복덩이</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
       © 2025 로또복덩이. All Rights Reserved.<br>
-      운영자: 노성종 · 이메일: nosjong84@gmail.com
+      운영자: 노성종 · 이메일: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="147a7b677e7b7a732c20547379757d783a777b79">[email&#160;protected]</a>
     </div>
   </footer>
 
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===================== DATA =====================
 const pastResults = [
   { round: 1214, date: '2026.03.08', numbers: [10, 15, 19, 27, 30, 33], bonus: 14 },
@@ -1458,8 +1458,18 @@ async function submitCert() {
   async function saveEntry(photoData) {
     var photoUrl = null;
     if (photoData) {
-      try { photoUrl = await compressImage(photoData, 400, 0.5); }
-      catch(e) { photoUrl = photoData; }
+      try {
+        // 단계적 압축: 300px / 0.4 퀄리티로 강하게 압축
+        photoUrl = await compressImage(photoData, 300, 0.4);
+        // Firestore 문서 한도 고려: base64가 700KB 초과 시 사진 제외
+        if (photoUrl && photoUrl.length > 700000) {
+          photoUrl = await compressImage(photoData, 200, 0.3);
+        }
+        if (photoUrl && photoUrl.length > 700000) {
+          alert('📸 사진 용량이 너무 커서 사진 없이 인증이 등록됩니다.\n스크린샷을 더 작게 잘라서 올려주세요!');
+          photoUrl = null;
+        }
+      } catch(e) { photoUrl = null; }
     }
     var certData = {
       grade: grade, nickname: nickname, message: message,
@@ -1590,16 +1600,23 @@ function closePhotoModal() {
 
 // ===================== 이미지 압축 =====================
 function compressImage(base64, maxWidth, quality) {
-  return new Promise(function(resolve) {
+  return new Promise(function(resolve, reject) {
     var img = new Image();
     img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var w = img.width, h = img.height;
-      if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', quality));
+      try {
+        var canvas = document.createElement("canvas");
+        var w = img.width, h = img.height;
+        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        if (h > maxWidth) { w = Math.round(w * maxWidth / h); h = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      } catch(e) { reject(e); }
     };
+    img.onerror = function() { reject(new Error("이미지 로드 실패")); };
     img.src = base64;
   });
 }
@@ -1773,17 +1790,4 @@ function installPWA() {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function(choice) {
       if (choice.outcome === 'accepted') {
-        document.getElementById('pwa-banner').style.display = 'none';
-      }
-      deferredPrompt = null;
-    });
-  }
-}
-
-function closePWA() {
-  document.getElementById('pwa-banner').style.display = 'none';
-}
-</script>
-
-</body>
-</html>
+       

@@ -800,7 +800,6 @@
   };
 </script>
 
-<!-- ✅ 카카오맵: autoload=false로 로드, 필요할 때만 kakao.maps.load()로 초기화 -->
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ca5b3d09056503f43e2ce1bdcf81efb8&libraries=services&autoload=false"></script>
 </head>
 <body>
@@ -846,8 +845,8 @@
   <!-- Jackpot Banner -->
   <div class="jackpot-banner">
     <div>
-      <div class="jackpot-label" id="jackpot-label">저번주 1등 당첨금 (1213회)</div>
-      <div class="jackpot-amount" id="jackpot-amount">₩ 1,740,011,646</div>
+      <div class="jackpot-label" id="jackpot-label">저번주 1등 당첨금 (1214회)</div>
+      <div class="jackpot-amount" id="jackpot-amount">₩ 2,431,577,188</div>
     </div>
     <div class="round-info">
       <div class="round-num">제 <span id="current-round">...</span>회</div>
@@ -1035,15 +1034,16 @@
     <div class="footer-bottom">
       <span>🍀 로또복덩이</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
       © 2025 로또복덩이. All Rights Reserved.<br>
-      운영자: 노성종 · 이메일: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96e5f3f9f8f1fcf9f8f1b8f2f3e0d6f1fbf7fffab8f5f9fb">[email&#160;protected]</a>
+      운영자: 노성종 · 이메일: nosjong84@gmail.com
     </div>
   </footer>
 
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ===================== DATA =====================
 const pastResults = [
+  { round: 1214, date: '2026.03.08', numbers: [10, 15, 19, 27, 30, 33], bonus: 14 },
   { round: 1213, date: '2026.03.01', numbers: [5, 11, 25, 27, 36, 38], bonus: 2 },
   { round: 1212, date: '2026.02.21', numbers: [5, 8, 25, 31, 41, 44], bonus: 45 },
   { round: 1211, date: '2026.02.14', numbers: [23, 26, 27, 35, 38, 40], bonus: 10 },
@@ -1374,7 +1374,6 @@ function switchTab(name, el) {
   if (panel) panel.classList.add('active');
   if (el) el.classList.add('active');
 
-  // 지도 탭 전환 시 리사이즈 트리거
   if (name === 'nearby' && window._nearbyMap) {
     setTimeout(function() {
       kakao.maps.event.trigger(window._nearbyMap, 'resize');
@@ -1390,9 +1389,9 @@ generateMultiple();
 
 // ===================== JACKPOT =====================
 function fetchJackpot() {
-  var lastRound = 1213;
-  var lastPrize = 1740011646;
-  var lastDate = '2026-03-01T21:00:00+09:00';
+  var lastRound = 1214;
+  var lastPrize = 2431577188;
+  var lastDate = '2026-03-08T21:00:00+09:00';
 
   document.getElementById('jackpot-amount').textContent = '₩ ' + lastPrize.toLocaleString('ko-KR');
   document.getElementById('jackpot-label').textContent = '저번주 1등 당첨금 (' + lastRound + '회)';
@@ -1605,7 +1604,7 @@ function compressImage(base64, maxWidth, quality) {
   });
 }
 
-// ===================== 내주변 판매점 ✅ 핵심 수정 =====================
+// ===================== 내주변 판매점 =====================
 function findNearby(btn) {
   if (!navigator.geolocation) {
     alert('위치 서비스 미지원 브라우저예요!');
@@ -1627,7 +1626,6 @@ function findNearby(btn) {
     var container = document.getElementById('nearby-map');
     container.innerHTML = '';
 
-    // ✅ autoload=false 이므로 kakao.maps.load()로 초기화
     kakao.maps.load(function() {
       var center = new kakao.maps.LatLng(lat, lng);
       var map = new kakao.maps.Map(container, { center: center, level: 4 });
@@ -1731,6 +1729,7 @@ function showMyPage() {
   alert('내 정보 페이지는 준비 중이에요!');
 }
 window.showMyPage = showMyPage;
+
 function switchAuthTab(tab) {
   var isLogin = tab === 'login';
   document.getElementById('tab-login').style.background = isLogin ? '#FFD700' : 'transparent';
@@ -1782,4 +1781,9 @@ function installPWA() {
 }
 
 function closePWA() {
-  document.getElementById
+  document.getElementById('pwa-banner').style.display = 'none';
+}
+</script>
+
+</body>
+</html>

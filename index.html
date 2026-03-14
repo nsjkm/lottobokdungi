@@ -165,8 +165,9 @@
   .next-draw { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
   .tabs {
-    display: flex;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
     margin: 28px 0 20px;
     background: rgba(255,255,255,0.04);
     border-radius: 12px;
@@ -175,17 +176,18 @@
 
   .tab {
     flex: 1;
-    padding: 10px 8px;
+    padding: 9px 4px;
     border: none;
     background: transparent;
     color: var(--muted);
     font-family: 'Noto Sans KR', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.25s;
     white-space: nowrap;
+    text-align: center;
   }
 
   .tab.active {
@@ -573,8 +575,8 @@
   .cert-banner-title { font-size: 18px; font-weight: 900; color: var(--gold); }
   .cert-banner-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
   .cert-form { display: flex; flex-direction: column; gap: 10px; }
-  .cert-form-row { display: flex; gap: 10px; }
-  .cert-select, .cert-input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; }
+  .cert-form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cert-select, .cert-input { flex: 1; min-width: 0; width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; }
   .cert-select option { background: #1a1a2e; }
   .cert-select:focus, .cert-input:focus { border-color: var(--gold); }
   .cert-textarea { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; resize: none; height: 80px; outline: none; width: 100%; }
@@ -862,12 +864,12 @@
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('generate', this)">행운 뽑기</button>
-    <button class="tab" onclick="switchTab('multiple', this)">자동 뽑기</button>
-    <button class="tab" onclick="switchTab('saved', this)">저장 번호</button>
-    <button class="tab" onclick="switchTab('stats', this)">통계</button>
-    <button class="tab" onclick="switchTab('past', this)">당첨번호</button>
-    <button class="tab" onclick="switchTab('cert', this)">당첨인증</button>
+    <button class="tab active" onclick="switchTab('generate', this)">🎲 행운뽑기</button>
+    <button class="tab" onclick="switchTab('multiple', this)">🍀 자동뽑기</button>
+    <button class="tab" onclick="switchTab('saved', this)">💾 저장번호</button>
+    <button class="tab" onclick="switchTab('stats', this)">📊 통계</button>
+    <button class="tab" onclick="switchTab('past', this)">🏆 당첨번호</button>
+    <button class="tab" onclick="switchTab('cert', this)">🎉 당첨인증</button>
     <button class="tab" onclick="switchTab('nearby', this)">🏪 주변판매점</button>
   </div>
 
@@ -1541,7 +1543,7 @@ function buildCertItem(c, idx) {
   html += '<span class="cert-nickname">'+c.nickname+'</span></div>';
   html += '<span class="cert-date">'+c.date+'</span></div>';
   if (c.message) html += '<div class="cert-message">&quot;'+c.message+'&quot;</div>';
-  if (c.photo) html += '<img src="'+c.photo+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-top:10px;" onerror="this.style.display=\'none\'">';
+  if (c.photo) html += '<div id="photo-wrap-'+cid+'" style="margin-top:10px;"><img id="photo-img-'+cid+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;display:none;" alt="인증사진"><div id="photo-loading-'+cid+'" style="text-align:center;padding:10px;color:var(--muted);font-size:12px;">📸 사진 로딩 중...</div></div>';
   html += '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">';
   html += '<button class="like-btn" onclick="toggleLike('+idx+')">👍 '+(c.likes||0)+'</button>';
   html += '<button class="comment-toggle" onclick="toggleCommentBox(\''+cid+'\')">💬 댓글 '+(c.comments?c.comments.length:0)+'</button>';
@@ -1574,6 +1576,47 @@ function renderCert() {
     return;
   }
   list.innerHTML = certList.map(function(c, idx) { return buildCertItem(c, idx); }).join('');
+
+  // 사진 blob 변환으로 모바일 호환성 확보
+  certList.forEach(function(c, idx) {
+    if (!c.photo) return;
+    var cid = c.id || String(idx);
+    var imgEl = document.getElementById('photo-img-' + cid);
+    var loadingEl = document.getElementById('photo-loading-' + cid);
+    if (!imgEl) return;
+    try {
+      // base64 → blob URL 변환
+      var base64 = c.photo;
+      var mime = 'image/jpeg';
+      if (base64.indexOf('data:') === 0) {
+        mime = base64.split(';')[0].split(':')[1];
+        base64 = base64.split(',')[1];
+      }
+      var binary = atob(base64);
+      var array = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+      var blob = new Blob([array], { type: mime });
+      var url = URL.createObjectURL(blob);
+      imgEl.onload = function() {
+        imgEl.style.display = 'block';
+        if (loadingEl) loadingEl.style.display = 'none';
+      };
+      imgEl.onerror = function() {
+        if (loadingEl) loadingEl.style.display = 'none';
+      };
+      imgEl.src = url;
+    } catch(e) {
+      // blob 변환 실패 시 직접 src로 폴백
+      imgEl.onload = function() {
+        imgEl.style.display = 'block';
+        if (loadingEl) loadingEl.style.display = 'none';
+      };
+      imgEl.onerror = function() {
+        if (loadingEl) loadingEl.style.display = 'none';
+      };
+      imgEl.src = c.photo;
+    }
+  });
 }
 renderCert();
 

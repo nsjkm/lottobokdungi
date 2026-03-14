@@ -1043,6 +1043,7 @@
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===================== DATA =====================
 const pastResults = [
+  { round: 1215, date: '2026.03.14', numbers: [13, 15, 19, 21, 44, 45], bonus: 39 },
   { round: 1214, date: '2026.03.08', numbers: [10, 15, 19, 27, 30, 33], bonus: 14 },
   { round: 1213, date: '2026.03.01', numbers: [5, 11, 25, 27, 36, 38], bonus: 2 },
   { round: 1212, date: '2026.02.21', numbers: [5, 8, 25, 31, 41, 44], bonus: 45 },
@@ -1389,9 +1390,9 @@ generateMultiple();
 
 // ===================== JACKPOT =====================
 function fetchJackpot() {
-  var lastRound = 1214;
-  var lastPrize = 2431577188;
-  var lastDate = '2026-03-08T21:00:00+09:00';
+  var lastRound = 1215;
+  var lastPrize = 1998542133;
+  var lastDate = '2026-03-14T21:00:00+09:00';
 
   document.getElementById('jackpot-amount').textContent = '₩ ' + lastPrize.toLocaleString('ko-KR');
   document.getElementById('jackpot-label').textContent = '저번주 1등 당첨금 (' + lastRound + '회)';

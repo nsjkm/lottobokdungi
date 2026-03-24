@@ -176,18 +176,23 @@
 
   .tab {
     flex: 1;
-    padding: 9px 4px;
+    padding: 8px 4px;
     border: none;
     background: transparent;
     color: var(--muted);
     font-family: 'Noto Sans KR', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.25s;
     white-space: nowrap;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
   }
 
   .tab.active {
@@ -361,12 +366,12 @@
   }
 
   .mode-btn.active {
-    border-color: var(--gold);
-    background: rgba(255,215,0,0.1);
-    color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(255,215,0,0.6);
+    filter: brightness(1.15);
   }
 
-  .mode-btn .icon { font-size: 18px; display: block; margin-bottom: 4px; }
+  .mode-btn .icon { font-size: 18px; display: flex; justify-content: center; margin-bottom: 5px; color: inherit; }
+  .mode-btn .icon svg { display: block; }
 
   .saved-list { display: flex; flex-direction: column; gap: 12px; }
 
@@ -561,7 +566,7 @@
     .ball { width: 48px; height: 48px; font-size: 17px; }
     .jackpot-banner { flex-direction: column; text-align: center; }
     .round-info { text-align: center; }
-    .tabs { flex-wrap: wrap; }
+    .tabs { grid-template-columns: repeat(4, 1fr); }
     .tab { font-size: 12px; padding: 8px 6px; }
   }
 
@@ -864,13 +869,20 @@
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('generate', this)">🎲 행운뽑기</button>
-    <button class="tab" onclick="switchTab('multiple', this)">🍀 자동뽑기</button>
-    <button class="tab" onclick="switchTab('saved', this)">💾 저장번호</button>
-    <button class="tab" onclick="switchTab('stats', this)">📊 통계</button>
-    <button class="tab" onclick="switchTab('past', this)">🏆 당첨번호</button>
-    <button class="tab" onclick="switchTab('cert', this)">🎉 당첨인증</button>
-    <button class="tab" onclick="switchTab('nearby', this)">🏪 주변판매점</button>
+    <button class="tab active" onclick="switchTab('generate', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 3px;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>행운뽑기</button>
+    <button class="tab" onclick="switchTab('multiple', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 3px;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>자동뽑기</button>
+    <button class="tab" onclick="switchTab('saved', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>저장번호</button>
+    <button class="tab" onclick="switchTab('stats', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 3px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>통계</button>
+    <button class="tab" onclick="switchTab('past', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 3px;"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>당첨번호</button>
+    <button class="tab" onclick="switchTab('cert', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 3px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>당첨인증</button>
+    <button class="tab" onclick="switchTab('nearby', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>주변판매점</button>
   </div>
 
   <!-- Tab: 번호 생성 -->
@@ -878,16 +890,22 @@
     <div class="card">
       <div class="card-title">✨ 오늘의 행운 방식 선택</div>
       <div class="mode-grid">
-        <button class="mode-btn active" onclick="setMode('random', this)"><span class="icon">🎲</span>순수 행운</button>
-        <button class="mode-btn" onclick="setMode('hot', this)"><span class="icon">🔥</span>뜨는 번호</button>
-        <button class="mode-btn" onclick="setMode('cold', this)"><span class="icon">❄️</span>때를 기다린</button>
-        <button class="mode-btn" onclick="setMode('balanced', this)"><span class="icon">⚖️</span>황금 균형</button>
-        <button class="mode-btn" onclick="setMode('oddeven', this)"><span class="icon">🔢</span>황금 비율</button>
-        <button class="mode-btn" onclick="setMode('lucky', this)"><span class="icon">🍀</span>복덩이 추천</button>
+        <button class="mode-btn active" onclick="setMode('random', this)" style="background:rgba(99,153,34,0.12);border-color:rgba(99,153,34,0.3);color:#3B6D11;">
+          <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></span>순수 행운</button>
+        <button class="mode-btn" onclick="setMode('hot', this)" style="background:rgba(194,80,50,0.12);border-color:rgba(194,80,50,0.3);color:#8B3A20;">
+          <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>뜨는 번호</button>
+        <button class="mode-btn" onclick="setMode('cold', this)" style="background:rgba(56,132,210,0.12);border-color:rgba(56,132,210,0.28);color:#1A6090;">
+          <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></span>때를 기다린</button>
+        <button class="mode-btn" onclick="setMode('balanced', this)" style="background:rgba(180,140,30,0.13);border-color:rgba(180,140,30,0.35);color:#7A5C00;">
+          <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>황금 균형</button>
+        <button class="mode-btn" onclick="setMode('oddeven', this)" style="background:rgba(15,110,86,0.12);border-color:rgba(15,110,86,0.3);color:#0F6E56;">
+          <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>황금 비율</button>
+        <button class="mode-btn" onclick="setMode('lucky', this)" style="background:rgba(210,105,30,0.13);border-color:rgba(210,105,30,0.35);color:#A0522D;">
+          <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>복덩이 추천</button>
       </div>
       <div class="mode-desc" id="mode-desc">
         <div class="desc-title">순수 행운</div>
-        1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요 😊
+        1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요.
       </div>
       <div class="balls-container" id="main-balls">
         <div class="ball empty">?</div>
@@ -899,19 +917,19 @@
       </div>
       <div class="gen-controls">
         <button class="btn btn-primary" onclick="generateNumbers()">복덩이야 번호 뽑아줘!</button>
-        <button class="btn btn-secondary" onclick="saveCurrentNumbers()">💾 행운 저장</button>
+        <button class="btn btn-secondary" onclick="saveCurrentNumbers()">저장</button>
         <button class="btn btn-ghost" onclick="clearBalls()">↺</button>
       </div>
     </div>
     <div class="notice">
-      <strong>⚠️ 안내</strong> 복덩이가 열심히 뽑아드린 번호예요 🍀 재미로 즐겨주세요! 이 번호로 반드시 당첨된다는 보장은 없답니다. 로또는 만 19세 이상 구매 가능해요 😊
+      <strong>[안내]</strong> 복덩이가 열심히 뽑아드린 번호예요. 재미로 즐겨주세요! 이 번호로 반드시 당첨된다는 보장은 없답니다. 로또는 만 19세 이상 구매 가능해요.
     </div>
   </div>
 
   <!-- Tab: 자동 뽑기 -->
   <div id="tab-multiple" class="tab-panel">
     <div class="card">
-      <div class="card-title">🍀 복덩이가 대신 뽑아드려요</div>
+      <div class="card-title">복덩이가 대신 뽑아드려요</div>
       <div class="count-control">
         <span class="count-label">게임 수</span>
         <div class="count-btns">
@@ -923,7 +941,7 @@
       <div id="multi-results"></div>
       <div class="gen-controls">
         <button class="btn btn-primary" onclick="generateMultiple()">복덩이야 다 뽑아줘!</button>
-        <button class="btn btn-secondary" onclick="saveAllMultiple()">💾 전체 행운 저장</button>
+        <button class="btn btn-secondary" onclick="saveAllMultiple()">전체 저장</button>
       </div>
     </div>
   </div>
@@ -946,10 +964,10 @@
   <!-- Tab: 저장 번호 -->
   <div id="tab-saved" class="tab-panel">
     <div class="card">
-      <div class="card-title">💾 내 행운 번호 모음</div>
+      <div class="card-title">내 행운 번호 모음</div>
       <div id="saved-list" class="saved-list">
         <div class="empty-state">
-          <div class="empty-icon">📂</div>
+          <div class="empty-icon" style="font-size:36px;color:var(--muted);">—</div>
           <div class="empty-text">저장된 번호가 없어요.<br>번호를 생성하고 저장해보세요!</div>
         </div>
       </div>
@@ -967,7 +985,7 @@
       <div id="cold-stats" class="stats-grid"></div>
     </div>
     <div class="card">
-      <div class="card-title">📈 전체 번호 빈도</div>
+      <div class="card-title">전체 번호 빈도</div>
       <div id="all-stats" class="stats-grid"></div>
     </div>
   </div>
@@ -1006,7 +1024,7 @@
         <textarea class="cert-textarea" id="cert-message" placeholder="당첨 소감 한마디! (선택사항)"></textarea>
         <div class="cert-photo-upload" onclick="document.getElementById('cert-photo').click()">
           <input type="file" id="cert-photo" accept="image/*" onchange="previewPhoto(this)" onclick="event.stopPropagation()">
-          <div class="cert-photo-icon">📸</div>
+          <div class="cert-photo-icon" style="font-size:28px;color:var(--muted);">↑</div>
           <div class="cert-photo-text"><strong>당첨 인증샷 올리기</strong> (선택사항)<br>당첨 화면 캡처를 올려주세요!</div>
           <img id="cert-photo-preview" class="cert-photo-preview" src="" alt="미리보기">
         </div>
@@ -1018,7 +1036,7 @@
       <div id="hall-of-fame"></div>
     </div>
     <div class="card">
-      <div class="card-title">📋 당첨 인증 목록 <span id="cert-count" style="color:var(--gold);font-size:12px;margin-left:6px;"></span></div>
+      <div class="card-title">당첨 인증 목록 <span id="cert-count" style="color:var(--gold);font-size:12px;margin-left:6px;"></span></div>
       <div id="cert-list"></div>
     </div>
   </div>
@@ -1026,7 +1044,7 @@
   <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-disclaimer">
-      <strong>⚠️ 면책 공지 (필독)</strong><br>
+      <strong>[면책 공지 · 필독]</strong><br>
       본 사이트(로또복덩이)는 통계 기반 번호 생성 서비스를 제공하며, <strong>당첨을 절대 보장하지 않습니다.</strong>
       생성된 번호는 참고용이며 당첨 결과에 대한 책임을 지지 않습니다.<br><br>
       유료 멤버십은 번호 생성 편의 기능에 대한 이용료이며, 당첨 번호 판매가 아닙니다.
@@ -1034,9 +1052,9 @@
       도박 문제로 어려움을 겪고 계시다면 <strong>한국도박문제예방치유원 1336</strong>으로 연락하세요.
     </div>
     <div class="footer-bottom">
-      <span>🍀 로또복덩이</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
+      <span>[로또복덩이]</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
       © 2025 로또복덩이. All Rights Reserved.<br>
-      운영자: 노성종 · 이메일: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="147a7b677e7b7a732c20547379757d783a777b79">[email&#160;protected]</a>
+      운영자: 노성종 · 이메일: shtjdwhd1@gmail.com
     </div>
   </footer>
 
@@ -1128,7 +1146,9 @@ function pickNumbers(mode) {
   } else if (mode === 'lucky') {
     var weights = pool.map(function(n) { return freqMap[n] + 1; });
     var total = weights.reduce(function(a,b){ return a+b; }, 0);
-    while (nums.length < 6) {
+    var attempts = 0;
+    while (nums.length < 6 && attempts < 1000) {
+      attempts++;
       var rand = Math.random() * total;
       var cum = 0;
       for (var i = 0; i < pool.length; i++) {
@@ -1138,6 +1158,11 @@ function pickNumbers(mode) {
           break;
         }
       }
+    }
+    // 혹시 부족하면 랜덤으로 채움
+    if (nums.length < 6) {
+      shuffle(pool);
+      pool.forEach(function(n) { if (nums.length < 6 && nums.indexOf(n) === -1) nums.push(n); });
     }
   }
   return nums.sort(function(a,b){ return a-b; });
@@ -1190,7 +1215,7 @@ function setMode(mode, btn) {
   document.querySelectorAll('.mode-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   var descs = {
-    'random': { title: '순수 행운', desc: '1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요 😊' },
+    'random': { title: '순수 행운', desc: '1부터 45까지 숫자 중에서 완전히 랜덤으로 6개를 뽑아요. 가장 공평하고 순수한 방식이에요.' },
     'hot':    { title: '뜨는 번호', desc: '최근 당첨에서 자주 나온 번호들 위주로 뽑아요. 요즘 잘 나오는 번호에 올라타는 방식이에요 🔥' },
     'cold':   { title: '때를 기다린', desc: '최근에 한 번도 안 나온 번호들을 뽑아요. 오랫동안 기다린 번호가 이번엔 나올 거라는 믿음이에요 ❄️' },
     'balanced':{ title: '황금 균형', desc: '자주 나온 번호 3개 + 안 나온 번호 3개를 균형있게 섞어요. 중간을 노리는 안정적인 방식이에요 ⚖️' },
@@ -1220,14 +1245,14 @@ function saveCurrentNumbers() {
     } catch(e) {}
   }
   var btn = event.target;
-  btn.textContent = '✅ 저장됨!';
-  setTimeout(function() { btn.textContent = '💾 행운 저장'; }, 1500);
+  btn.textContent = '저장됨';
+  setTimeout(function() { btn.textContent = '저장'; }, 1500);
 }
 
 function renderSaved() {
   var container = document.getElementById('saved-list');
   if (savedNumbers.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-text">저장된 번호가 없어요.<br>번호를 생성하고 저장해보세요!</div></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon" style="font-size:36px;color:var(--muted);">—</div><div class="empty-text">저장된 번호가 없어요.<br>번호를 생성하고 저장해보세요!</div></div>';
     return;
   }
   container.innerHTML = '';
@@ -1307,8 +1332,8 @@ function saveAllMultiple() {
   localStorage.setItem('lottoSaved', JSON.stringify(savedNumbers));
   renderSaved();
   var btn = event.target;
-  btn.textContent = '✅ 저장됨!';
-  setTimeout(function() { btn.textContent = '💾 전체 행운 저장'; }, 1500);
+  btn.textContent = '저장됨';
+  setTimeout(function() { btn.textContent = '전체 저장'; }, 1500);
 }
 
 // ===================== STATS =====================
@@ -1470,7 +1495,7 @@ async function submitCert() {
           photoUrl = await compressImage(photoData, 200, 0.3);
         }
         if (photoUrl && photoUrl.length > 700000) {
-          alert('📸 사진 용량이 너무 커서 사진 없이 인증이 등록됩니다.\n스크린샷을 더 작게 잘라서 올려주세요!');
+          alert('사진 용량이 너무 커서 사진 없이 인증이 등록됩니다.\n스크린샷을 더 작게 잘라서 올려주세요!');
           photoUrl = null;
         }
       } catch(e) { photoUrl = null; }
@@ -1497,7 +1522,7 @@ async function submitCert() {
     document.querySelector('.cert-photo-text').innerHTML = '<strong>당첨 인증샷 올리기</strong> (선택사항)<br>당첨 화면 캡처를 올려주세요!';
     renderCert();
     if (grade === '1') alert('🎊 축하합니다!! 1등 당첨!! 정말 대단해요!');
-    else alert('✅ 인증이 등록됐어요! 감사합니다 🍀');
+    else alert('인증이 등록됐어요! 감사합니다.');
   }
 
   if (photoInput.files && photoInput.files[0]) {
@@ -1523,6 +1548,11 @@ async function toggleLike(idx) {
   renderCert();
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function gradeLabel(g) {
   return { '1':'👑 1등', '2':'🥈 2등', '3':'🥉 3등', '4':'4등', '5':'5등' }[g] || g+'등';
 }
@@ -1532,7 +1562,7 @@ function buildCertItem(c, idx) {
   var commentsHtml = '';
   if (c.comments && c.comments.length > 0) {
     commentsHtml = c.comments.map(function(cm) {
-      return '<div class="comment-item"><span class="comment-nick">'+cm.nick+'</span><span>'+cm.text+'</span></div>';
+      return '<div class="comment-item"><span class="comment-nick">'+escapeHtml(cm.nick)+'</span><span>'+escapeHtml(cm.text)+'</span></div>';
     }).join('');
   } else {
     commentsHtml = '<div style="font-size:11px;color:#666;padding:4px 0;">첫 댓글을 남겨보세요!</div>';
@@ -1541,10 +1571,10 @@ function buildCertItem(c, idx) {
   html += '<div class="cert-item '+(c.grade==='1'?'grade-1-item':'')+'">';
   html += '<div class="cert-item-header"><div class="cert-item-left">';
   html += '<span class="cert-grade-badge badge-'+c.grade+'">'+gradeLabel(c.grade)+'</span>';
-  html += '<span class="cert-nickname">'+c.nickname+'</span></div>';
+  html += '<span class="cert-nickname">'+escapeHtml(c.nickname)+'</span></div>';
   html += '<span class="cert-date">'+c.date+'</span></div>';
-  if (c.message) html += '<div class="cert-message">&quot;'+c.message+'&quot;</div>';
-  if (c.photo) html += '<div id="photo-wrap-'+cid+'" style="margin-top:10px;"><img id="photo-img-'+cid+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;display:none;" alt="인증사진"><div id="photo-loading-'+cid+'" style="text-align:center;padding:10px;color:var(--muted);font-size:12px;">📸 사진 로딩 중...</div></div>';
+  if (c.message) html += '<div class="cert-message">&quot;'+escapeHtml(c.message)+'&quot;</div>';
+  if (c.photo) html += '<div id="photo-wrap-'+cid+'" style="margin-top:10px;"><img id="photo-img-'+cid+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;display:none;" alt="인증사진"><div id="photo-loading-'+cid+'" style="text-align:center;padding:10px;color:var(--muted);font-size:12px;">사진 불러오는 중...</div></div>';
   html += '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">';
   html += '<button class="like-btn" onclick="toggleLike('+idx+')">👍 '+(c.likes||0)+'</button>';
   html += '<button class="comment-toggle" onclick="toggleCommentBox(\''+cid+'\')">💬 댓글 '+(c.comments?c.comments.length:0)+'</button>';
@@ -1569,11 +1599,11 @@ function renderCert() {
   if (firstPrize.length > 0) {
     hallCard.style.display = 'block';
     hall.innerHTML = firstPrize.map(function(c) {
-      return '<div class="hall-item"><div class="hall-crown">👑</div><div><div class="hall-name">'+c.nickname+'</div><div class="hall-date">'+c.date+'</div>'+(c.message?'<div class="hall-msg">"'+c.message+'"</div>':'')+'</div></div>';
+      return '<div class="hall-item"><div class="hall-crown">👑</div><div><div class="hall-name">'+c.nickname+'</div><div class="hall-date">'+c.date+'</div>'+(c.message?'<div class="hall-msg">"'+escapeHtml(c.message)+'"</div>':'')+'</div></div>';
     }).join('');
   }
   if (certList.length === 0) {
-    list.innerHTML = '<div class="cert-empty"><div class="cert-empty-icon">🍀</div><div>아직 인증이 없어요!<br>첫 번째 당첨자가 되어보세요!</div></div>';
+    list.innerHTML = '<div class="cert-empty"><div class="cert-empty-icon" style="font-size:32px;color:var(--muted);">—</div><div>아직 인증이 없어요!<br>첫 번째 당첨자가 되어보세요!</div></div>';
     return;
   }
   list.innerHTML = certList.map(function(c, idx) { return buildCertItem(c, idx); }).join('');
@@ -1601,9 +1631,11 @@ function renderCert() {
       imgEl.onload = function() {
         imgEl.style.display = 'block';
         if (loadingEl) loadingEl.style.display = 'none';
+        URL.revokeObjectURL(url);
       };
       imgEl.onerror = function() {
         if (loadingEl) loadingEl.style.display = 'none';
+        URL.revokeObjectURL(url);
       };
       imgEl.src = url;
     } catch(e) {
@@ -1629,7 +1661,7 @@ function previewPhoto(input) {
     reader.onload = function(e) {
       preview.src = e.target.result;
       preview.style.display = 'block';
-      document.querySelector('.cert-photo-text').innerHTML = '<strong style="color:var(--green)">✅ 사진이 선택됐어요!</strong><br>다른 사진으로 바꾸려면 클릭하세요';
+      document.querySelector('.cert-photo-text').innerHTML = '<strong style="color:var(--green)">사진이 선택됐어요</strong><br>다른 사진으로 바꾸려면 클릭하세요';
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -1812,7 +1844,7 @@ function switchAuthTab(tab) {
 <div id="pwa-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#FFD700,#FF6B35);border-radius:16px;padding:14px 24px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,0.4);width:90%;max-width:400px;">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
     <div>
-      <div style="font-size:14px;font-weight:900;color:#0A0A1A;">📱 앱으로 설치하기</div>
+      <div style="font-size:14px;font-weight:900;color:#0A0A1A;">앱으로 설치하기</div>
       <div style="font-size:11px;color:rgba(0,0,0,0.7);margin-top:2px;">홈 화면에 추가하면 앱처럼 사용해요!</div>
     </div>
     <div style="display:flex;gap:8px;">
@@ -1835,4 +1867,17 @@ function installPWA() {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function(choice) {
       if (choice.outcome === 'accepted') {
-       
+               document.getElementById('pwa-banner').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
+function closePWA() {
+  document.getElementById('pwa-banner').style.display = 'none';
+}
+</script>
+
+</body>
+</html>

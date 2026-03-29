@@ -1054,15 +1054,16 @@
     <div class="footer-bottom">
       <span>[로또복덩이]</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
       © 2025 로또복덩이. All Rights Reserved.<br>
-      운영자: 노성종 · 이메일: shtjdwhd1@gmail.com
+      운영자: 노성종 · 이메일: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eedf6eaf4fae9f6faafdef9f3fff7f2b0fdf1f3">[email&#160;protected]</a>
     </div>
   </footer>
 
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===================== DATA =====================
 const pastResults = [
+  { round: 1217, date: '2026.03.28', numbers: [8, 10, 15, 20, 29, 31], bonus: 41 },
   { round: 1216, date: '2026.03.22', numbers: [3, 10, 14, 15, 23, 24], bonus: 25 },
   { round: 1215, date: '2026.03.14', numbers: [13, 15, 19, 21, 44, 45], bonus: 39 },
   { round: 1214, date: '2026.03.08', numbers: [10, 15, 19, 27, 30, 33], bonus: 14 },
@@ -1418,9 +1419,9 @@ generateMultiple();
 
 // ===================== JACKPOT =====================
 function fetchJackpot() {
-  var lastRound = 1216;
-  var lastPrize = 2148654000;
-  var lastDate = '2026-03-22T21:00:00+09:00';
+  var lastRound = 1217;
+  var lastPrize = 2179738018;
+  var lastDate = '2026-03-28T21:00:00+09:00';
 
   document.getElementById('jackpot-amount').textContent = '₩ ' + lastPrize.toLocaleString('ko-KR');
   document.getElementById('jackpot-label').textContent = '저번주 1등 당첨금 (' + lastRound + '회)';
@@ -1867,17 +1868,4 @@ function installPWA() {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function(choice) {
       if (choice.outcome === 'accepted') {
-               document.getElementById('pwa-banner').style.display = 'none';
-      }
-      deferredPrompt = null;
-    });
-  }
-}
-
-function closePWA() {
-  document.getElementById('pwa-banner').style.display = 'none';
-}
-</script>
-
-</body>
-</html>
+              

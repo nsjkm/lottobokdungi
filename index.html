@@ -1054,7 +1054,7 @@
     <div class="footer-bottom">
       <span>[로또복덩이]</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
       © 2025 로또복덩이. All Rights Reserved.<br>
-      운영자: 노성종 · 이메일: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eedf6eaf4fae9f6faafdef9f3fff7f2b0fdf1f3">[email&#160;protected]</a>
+      운영자: 노성종 · 이메일: shtjdwhd1@gmail.com
     </div>
   </footer>
 
@@ -1702,37 +1702,51 @@ function compressImage(base64, maxWidth, quality) {
 // ===================== 내주변 판매점 =====================
 // ===================== 전국 명당 데이터 =====================
 var famousStores = [
-  { name: '스파', address: '서울 노원구', wins: 52, region: '서울' },
-  { name: '잠실매점', address: '서울 송파구', wins: 20, region: '서울' },
-  { name: '오케이상사', address: '서울 서초구', wins: 18, region: '서울' },
-  { name: '제이복권방', address: '서울 종로구', wins: 16, region: '서울' },
-  { name: '버스판매소', address: '서울 영등포구', wins: 14, region: '서울' },
-  { name: '로또킹', address: '서울 영등포구', wins: 12, region: '서울' },
-  { name: '부일카서비스', address: '부산 동구', wins: 50, region: '부산' },
-  { name: '뉴빅마트', address: '부산 기장군', wins: 30, region: '부산' },
-  { name: '돈벼락맞는곳', address: '부산 동구', wins: 14, region: '부산' },
-  { name: '로또휴게실', address: '경기 용인시', wins: 27, region: '경기' },
-  { name: '용인로또휴게실', address: '경기 용인시', wins: 27, region: '경기' },
-  { name: '흥양마중물', address: '강원 원주시', wins: 7, region: '강원' },
-  { name: '복권닷컴', address: '강원 양양군', wins: 6, region: '강원' },
-  { name: '황금로또', address: '강원 원주시', wins: 6, region: '강원' },
-  { name: '행운로또방', address: '강원 화천군', wins: 6, region: '강원' },
-  { name: '407억당첨가판점', address: '강원 춘천시', wins: 4, region: '강원' },
-  { name: '일등복권편의점', address: '대구', wins: 15, region: '대구' },
-  { name: '세진전자통신', address: '대구', wins: 10, region: '대구' },
-  { name: '오천억복권방', address: '광주 서구', wins: 12, region: '광주' },
-  { name: '대박천하마트', address: '인천 부평구', wins: 8, region: '인천' },
-  { name: '알리바이', address: '전남 나주시', wins: 13, region: '전남' },
+  // 서울
+  { keys: ['스파','스파편의점','노원스파'], address: '서울 노원구', wins1: 52, wins2: 228 },
+  { keys: ['잠실매점'], address: '서울 송파구', wins1: 20, wins2: 60 },
+  { keys: ['오케이상사','ok상사'], address: '서울 서초구', wins1: 18, wins2: 55 },
+  { keys: ['제이복권방'], address: '서울 종로구', wins1: 16, wins2: 40 },
+  { keys: ['버스판매소','영등포버스'], address: '서울 영등포구', wins1: 14, wins2: 38 },
+  { keys: ['로또킹'], address: '서울 영등포구', wins1: 12, wins2: 30 },
+  { keys: ['통일복권방'], address: '서울 송파구', wins1: 10, wins2: 28 },
+  { keys: ['세계로생활가전','세계로'], address: '서울 동작구', wins1: 9, wins2: 22 },
+  { keys: ['토큰판매소'], address: '서울 송파구', wins1: 8, wins2: 20 },
+  { keys: ['원스탑'], address: '서울 송파구', wins1: 7, wins2: 18 },
+  // 부산
+  { keys: ['부일카','부일카서비스'], address: '부산 동구', wins1: 50, wins2: 180 },
+  { keys: ['뉴빅마트'], address: '부산 기장군', wins1: 30, wins2: 90 },
+  { keys: ['돈벼락','돈벼락맞는곳'], address: '부산 동구', wins1: 14, wins2: 42 },
+  { keys: ['천하명당초량'], address: '부산 동구', wins1: 5, wins2: 15 },
+  { keys: ['황금로또'], address: '부산', wins1: 4, wins2: 12 },
+  // 경기
+  { keys: ['로또휴게실','용인휴게실','용인로또휴게실'], address: '경기 용인시', wins1: 27, wins2: 80 },
+  { keys: ['대박천하마트','대박천하'], address: '인천 부평구', wins1: 8, wins2: 25 },
+  // 강원
+  { keys: ['흥양마중물'], address: '강원 원주시', wins1: 7, wins2: 20 },
+  { keys: ['복권닷컴'], address: '강원 양양군', wins1: 6, wins2: 15 },
+  { keys: ['황금로또'], address: '강원 원주시', wins1: 6, wins2: 18 },
+  { keys: ['행운로또방','화천복권방'], address: '강원 화천군', wins1: 6, wins2: 14 },
+  { keys: ['407억당첨','407억'], address: '강원 춘천시', wins1: 4, wins2: 10 },
+  { keys: ['우두로또'], address: '강원 춘천시', wins1: 3, wins2: 19 },
+  // 대구/경북
+  { keys: ['일등복권편의점','일등복권'], address: '대구', wins1: 15, wins2: 40 },
+  { keys: ['세진전자통신','세진전자'], address: '대구', wins1: 10, wins2: 28 },
+  // 광주/전라
+  { keys: ['오천억복권방','오천억'], address: '광주 서구', wins1: 12, wins2: 35 },
+  { keys: ['알리바이'], address: '전남 나주시', wins1: 13, wins2: 38 },
 ];
 
 function checkFamous(placeName) {
   var matched = null;
   var nameLower = placeName.replace(/\s/g, '').toLowerCase();
   famousStores.forEach(function(s) {
-    var storeLower = s.name.replace(/\s/g, '').toLowerCase();
-    if (nameLower.indexOf(storeLower) !== -1 || storeLower.indexOf(nameLower) !== -1) {
-      if (!matched || s.wins > matched.wins) matched = s;
-    }
+    s.keys.forEach(function(key) {
+      var keyLower = key.replace(/\s/g, '').toLowerCase();
+      if (nameLower.indexOf(keyLower) !== -1 || keyLower.indexOf(nameLower) !== -1) {
+        if (!matched || s.wins1 > matched.wins1) matched = s;
+      }
+    });
   });
   return matched;
 }
@@ -1792,7 +1806,10 @@ function findNearby(btn) {
               : 'border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);';
             item.style.cssText = borderStyle + 'border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s;';
             var famousBadge = famous
-              ? '<div style="display:inline-block;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#FFD700;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:6px;">명당 · 1등 ' + famous.wins + '회 배출</div><br>'
+              ? '<div style="margin-bottom:6px;">' +
+                '<span style="display:inline-block;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#FFD700;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:4px;">👑 1등 ' + famous.wins1 + '회</span>' +
+                '<span style="display:inline-block;background:rgba(192,192,192,0.12);border:1px solid rgba(192,192,192,0.3);color:#C0C0C0;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">🥈 2등 ' + famous.wins2 + '회</span>' +
+                '</div>'
               : '';
             item.innerHTML =
               famousBadge +
@@ -1918,4 +1935,17 @@ function installPWA() {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function(choice) {
       if (choice.outcome === 'accepted') {
-              
+                      document.getElementById('pwa-banner').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
+function closePWA() {
+  document.getElementById('pwa-banner').style.display = 'none';
+}
+</script>
+
+</body>
+</html>

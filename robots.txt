@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lottobokdungi.co.kr/sitemap.xml

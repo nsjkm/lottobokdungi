@@ -1054,15 +1054,16 @@
     <div class="footer-bottom">
       <span>[로또복덩이]</span> · 번호 생성 서비스 · 당첨 보장 없음<br>
       © 2025 로또복덩이. All Rights Reserved.<br>
-      운영자: 노성종 · 이메일: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e4978c908e80938c80d5a48389858d88ca878b89">[email&#160;protected]</a>
+      운영자: 노성종 · 이메일: shtjdwhd1@gmail.com
     </div>
   </footer>
 
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ===================== DATA =====================
 const pastResults = [
+  { round: 1219, date: '2026.04.12', numbers: [1, 2, 15, 28, 39, 45], bonus: 31 },
   { round: 1218, date: '2026.04.05', numbers: [3, 28, 31, 32, 42, 45], bonus: 25 },
   { round: 1217, date: '2026.03.28', numbers: [8, 10, 15, 20, 29, 31], bonus: 41 },
   { round: 1216, date: '2026.03.22', numbers: [3, 10, 14, 15, 23, 24], bonus: 25 },
@@ -1420,9 +1421,9 @@ generateMultiple();
 
 // ===================== JACKPOT =====================
 function fetchJackpot() {
-  var lastRound = 1218;
-  var lastPrize = 1714482042;
-  var lastDate = '2026-04-05T21:00:00+09:00';
+  var lastRound = 1219;
+  var lastPrize = 2508232844;
+  var lastDate = '2026-04-12T21:00:00+09:00';
 
   document.getElementById('jackpot-amount').textContent = '₩ ' + lastPrize.toLocaleString('ko-KR');
   document.getElementById('jackpot-label').textContent = '저번주 1등 당첨금 (' + lastRound + '회)';
@@ -1490,9 +1491,7 @@ async function submitCert() {
     var photoUrl = null;
     if (photoData) {
       try {
-        // 단계적 압축: 300px / 0.4 퀄리티로 강하게 압축
         photoUrl = await compressImage(photoData, 300, 0.4);
-        // Firestore 문서 한도 고려: base64가 700KB 초과 시 사진 제외
         if (photoUrl && photoUrl.length > 700000) {
           photoUrl = await compressImage(photoData, 200, 0.3);
         }
@@ -1610,7 +1609,6 @@ function renderCert() {
   }
   list.innerHTML = certList.map(function(c, idx) { return buildCertItem(c, idx); }).join('');
 
-  // 사진 blob 변환으로 모바일 호환성 확보
   certList.forEach(function(c, idx) {
     if (!c.photo) return;
     var cid = c.id || String(idx);
@@ -1618,7 +1616,6 @@ function renderCert() {
     var loadingEl = document.getElementById('photo-loading-' + cid);
     if (!imgEl) return;
     try {
-      // base64 → blob URL 변환
       var base64 = c.photo;
       var mime = 'image/jpeg';
       if (base64.indexOf('data:') === 0) {
@@ -1641,7 +1638,6 @@ function renderCert() {
       };
       imgEl.src = url;
     } catch(e) {
-      // blob 변환 실패 시 직접 src로 폴백
       imgEl.onload = function() {
         imgEl.style.display = 'block';
         if (loadingEl) loadingEl.style.display = 'none';
@@ -1701,9 +1697,7 @@ function compressImage(base64, maxWidth, quality) {
 }
 
 // ===================== 내주변 판매점 =====================
-// ===================== 전국 명당 데이터 =====================
 var famousStores = [
-  // 서울
   { keys: ['스파','스파편의점','노원스파'], address: '서울 노원구', wins1: 52, wins2: 228 },
   { keys: ['잠실매점'], address: '서울 송파구', wins1: 20, wins2: 60 },
   { keys: ['오케이상사','ok상사'], address: '서울 서초구', wins1: 18, wins2: 55 },
@@ -1714,26 +1708,21 @@ var famousStores = [
   { keys: ['세계로생활가전','세계로'], address: '서울 동작구', wins1: 9, wins2: 22 },
   { keys: ['토큰판매소'], address: '서울 송파구', wins1: 8, wins2: 20 },
   { keys: ['원스탑'], address: '서울 송파구', wins1: 7, wins2: 18 },
-  // 부산
   { keys: ['부일카','부일카서비스'], address: '부산 동구', wins1: 50, wins2: 180 },
   { keys: ['뉴빅마트'], address: '부산 기장군', wins1: 30, wins2: 90 },
   { keys: ['돈벼락','돈벼락맞는곳'], address: '부산 동구', wins1: 14, wins2: 42 },
   { keys: ['천하명당초량'], address: '부산 동구', wins1: 5, wins2: 15 },
   { keys: ['황금로또'], address: '부산', wins1: 4, wins2: 12 },
-  // 경기
   { keys: ['로또휴게실','용인휴게실','용인로또휴게실'], address: '경기 용인시', wins1: 27, wins2: 80 },
   { keys: ['대박천하마트','대박천하'], address: '인천 부평구', wins1: 8, wins2: 25 },
-  // 강원
   { keys: ['흥양마중물'], address: '강원 원주시', wins1: 7, wins2: 20 },
   { keys: ['복권닷컴'], address: '강원 양양군', wins1: 6, wins2: 15 },
   { keys: ['황금로또'], address: '강원 원주시', wins1: 6, wins2: 18 },
   { keys: ['행운로또방','화천복권방'], address: '강원 화천군', wins1: 6, wins2: 14 },
   { keys: ['407억당첨','407억'], address: '강원 춘천시', wins1: 4, wins2: 10 },
   { keys: ['우두로또'], address: '강원 춘천시', wins1: 3, wins2: 19 },
-  // 대구/경북
   { keys: ['일등복권편의점','일등복권'], address: '대구', wins1: 15, wins2: 40 },
   { keys: ['세진전자통신','세진전자'], address: '대구', wins1: 10, wins2: 28 },
-  // 광주/전라
   { keys: ['오천억복권방','오천억'], address: '광주 서구', wins1: 12, wins2: 35 },
   { keys: ['알리바이'], address: '전남 나주시', wins1: 13, wins2: 38 },
 ];
@@ -1935,5 +1924,15 @@ function installPWA() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function(choice) {
-      if (choice.outcome === 'accepted') {
-                     
+      deferredPrompt = null;
+      document.getElementById('pwa-banner').style.display = 'none';
+    });
+  }
+}
+
+function closePWA() {
+  document.getElementById('pwa-banner').style.display = 'none';
+}
+</script>
+</body>
+</html>
